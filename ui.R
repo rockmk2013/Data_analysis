@@ -24,11 +24,22 @@ shinyUI(fluidPage(
                           ".csv")
              ),
              HTML('<br>'),
-             h2("請選擇單一店家資料"),
+             h2("請選擇單一店家資料(小時)"),
              HTML('<br>'),
              HTML('<center><img src="single.png" height=auto width=auto></center>'),
              HTML('<br>'),
              fileInput("single", "Choose CSV File",
+                       accept = c(
+                         "text/csv",
+                         "text/comma-separated-values,text/plain",
+                         ".csv")
+             ),
+             HTML('<br><br>'),
+             h2("請選擇單一店家資料(天)"),
+             HTML('<br>'),
+             HTML('<center><img src="Daily.png" height=auto width=auto></center>'),
+             HTML('<br>'),
+             fileInput("daily", "Choose CSV File",
                        accept = c(
                          "text/csv",
                          "text/comma-separated-values,text/plain",
@@ -130,7 +141,30 @@ shinyUI(fluidPage(
              HTML('<br>')
     ),
     "Single Store",
-    tabPanel("Exploratory Data Analysis"),
+    tabPanel("Moving Average Analysis",
+             tabsetPanel(
+               tabPanel("Hourly",
+                        HTML('<center><h2>Revenue vs InstoreTraffic</h2></center>'),
+                        plotOutput("revenue_hourly"),
+                        HTML('<br>'),
+                        HTML('<br>'),
+                        HTML('<center><h2>Transaction vs InstoreTraffic</h2></center>'),
+                        plotOutput("transaction_hourly"),
+                        HTML('<br>'),
+                        HTML('<br>')
+               ),
+               tabPanel("Daily",
+                        HTML('<center><h2>Revenue vs InstoreTraffic</h2></center>'),
+                        plotOutput("revenue_daily"),
+                        HTML('<br>'),
+                        HTML('<br>'),
+                        HTML('<center><h2>Transaction vs InstoreTraffic</h2></center>'),
+                        plotOutput("transaction_daily"),
+                        HTML('<br>'),
+                        HTML('<br>')
+               )
+             )
+             ),
     tabPanel("Random Forest Model",
              tabsetPanel(
                tabPanel("Revenue",

@@ -6,4 +6,5 @@ shinyServer(function(input, output) {
   source('tabRF.R', local=TRUE, encoding = "utf-8")
   source('tabFQA.R', local=TRUE, encoding = "utf-8")
   source('tabSINDEA.R',local=TRUE , encoding = "utf-8")
+  source('tabMovingAverage.R',local=TRUE , encoding = "utf-8")
 })
