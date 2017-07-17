@@ -1,0 +1,224 @@
+library(shiny)
+library(rpart)
+shinyUI(fluidPage(
+  
+  titlePanel(h1("SkyREC Data Analysis")),
+  
+  navlistPanel(
+    
+    "Methods",
+    tabPanel("Flowchart",
+             h2('Flowchart'),
+             HTML('<br><br>'),
+             HTML('<center><img src="flow.png" height=auto width=auto></center>')
+    ),
+    
+    "Data",
+    tabPanel("Data Input",
+             h2("請選擇多店家資料"),
+             HTML('<br>'),
+             HTML('<center><img src="multi.png" height=auto width=auto></center>'),
+             HTML('<br>'),
+             fileInput("multi", "Choose CSV File",
+                        accept = c(
+                          "text/csv",
+                          "text/comma-separated-values,text/plain",
+                          ".csv")
+             ),
+             HTML('<br>'),
+             h2("請選擇單一店家資料(小時)"),
+             HTML('<br>'),
+             HTML('<center><img src="single.png" height=auto width=auto></center>'),
+             HTML('<br>'),
+             fileInput("single", "Choose CSV File",
+                       accept = c(
+                         "text/csv",
+                         "text/comma-separated-values,text/plain",
+                         ".csv")
+             ),
+             HTML('<br><br>'),
+             h2("請選擇單一店家資料(天)"),
+             HTML('<br>'),
+             HTML('<br>'),
+             fileInput("single_day", "Choose CSV File",
+                       accept = c(
+                         "text/csv",
+                         "text/comma-separated-values,text/plain",
+                         ".csv")
+             )
+             
+    ),
+    
+    "Multiple Stores",
+    tabPanel("Data Envelopment Analysis",
+             tabsetPanel(
+               tabPanel("All", 
+                        HTML('<center><h2>各分店指標平均值</h2></center>'),
+                        dataTableOutput("multi_mean"),
+                        HTML('<br>'),
+                        HTML('<br>'),
+                        HTML('<center><h2>各分店CRS/VRS值</h2></center>'),
+                        dataTableOutput("multi_cv"),
+                        HTML('<br>'),
+                        HTML('<br>'),
+                        HTML('<center><h2>各分店CRS/VRS效率值比較</h2></center>'),
+                        plotOutput("multi_cv_plot"),
+                        HTML('<br>'),
+                        HTML('<br>'),
+                        HTML('<center><h2>各分店CRS/VRS效率前緣圖</h2></center>'),
+                        plotOutput("multi_frontier_plot"),
+                        HTML('<br>')
+               ),
+               tabPanel("Weekday", 
+                        HTML('<center><h2>各分店周間指標平均值</h2></center>'),
+                        dataTableOutput("multi_weekday_mean"),
+                        HTML('<br>'),
+                        HTML('<br>'),
+                        HTML('<center><h2>各分店周間CRS/VRS值</h2></center>'),
+                        dataTableOutput("multi_weekday_cv"),
+                        HTML('<br>'),
+                        HTML('<br>'),
+                        HTML('<center><h2>各分店周間CRS/VRS效率值比較</h2></center>'),
+                        plotOutput("multi_weekday_cv_plot"),
+                        HTML('<br>'),
+                        HTML('<br>'),
+                        HTML('<center><h2>各分店周間CRS/VRS效率前緣圖</h2></center>'),
+                        plotOutput("multi_weekday_frontier_plot"),
+                        HTML('<br>')
+               ),
+               tabPanel("Weekend", 
+                        HTML('<center><h2>各分店周末指標平均值</h2></center>'),
+                        dataTableOutput("multi_weekend_mean"),
+                        HTML('<br>'),
+                        HTML('<br>'),
+                        HTML('<center><h2>各分店周末CRS/VRS值</h2></center>'),
+                        dataTableOutput("multi_weekend_cv"),
+                        HTML('<br>'),
+                        HTML('<br>'),
+                        HTML('<center><h2>各分店周末CRS/VRS效率值比較</h2></center>'),
+                        plotOutput("multi_weekend_cv_plot"),
+                        HTML('<br>'),
+                        HTML('<br>'),
+                        HTML('<center><h2>各分店周末CRS/VRS效率前緣圖</h2></center>'),
+                        plotOutput("multi_weekend_frontier_plot"),
+                        HTML('<br>')
+               )
+             )
+             
+    ),
+    
+    tabPanel("Factor Analysis",
+             HTML('<center><h2>各指標之間相關性</h2></center>'),
+             plotOutput("multi_cor_plot"),
+             HTML('<br>'),
+             HTML('<br>'),
+             HTML('<center><h2>陡坡圖</h2></center>'),
+             plotOutput("multi_scree_plot"),
+             HTML('<br>'),
+             HTML('<br>'),
+             HTML('<center><h2>指標與因素關係圖</h2></center>'),
+             plotOutput("fa_plot"),
+             HTML('<br>'),
+             HTML('<br>'),
+             HTML('<center><h2>指標與因素分配圖</h2></center>'),
+             plotOutput("fa_plot2"),
+             HTML('<br>'),
+             HTML('<br>'),
+             HTML('<center><h2>各店家因素得分</h2></center>'),
+             dataTableOutput("fa_store"),
+             HTML('<br>'),
+             HTML('<br>'),
+             HTML('<center><h2>各店家因素四象限圖</h2></center>'),
+             plotOutput("fa_store_plot"),
+             HTML('<br>'),
+             HTML('<br>')
+         
+    ),
+    tabPanel("Four Quadrant Analysis",
+             HTML('<center><h2>各指標之四象限分析</h2></center>'),
+             plotOutput("multi_weekandweekend_plot"),
+             HTML('<br>'),
+             HTML('<br>')
+    ),
+    "Single Store",
+    tabPanel("Exploratory Data Analysis"),
+    tabPanel("Random Forest Model",
+             tabsetPanel(
+               tabPanel("Revenue",
+                        HTML('<center><h2>各變數對營業額的影響程度</h2></center>'),
+                        plotOutput("revenue_rf_imp"),
+                        HTML('<br>'),
+                        HTML('<br>'),
+                        HTML('<center><h2>營業額決策樹</h2></center>'),
+                        plotOutput("revenue_rf_tree"),
+                        HTML('<br>'),
+                        HTML('<br>')
+               ),
+               tabPanel("Instore Traffic", 
+                        HTML('<center><h2>各分店周間指標平均值</h2></center>'),
+                        HTML('<br>')
+               )
+             )
+             
+    ),
+    tabPanel("Agent Schedule Optimization"),
+    tabPanel("Data Envelopment Analysis",
+             tabsetPanel(
+               tabPanel("All", 
+                        HTML('<center><h2>單店小時指標平均值</h2></center>'),
+                        dataTableOutput("single_mean"),
+                        HTML('<br>'),
+                        HTML('<br>'),
+                        HTML('<center><h2>單店小時CRS/VRS值</h2></center>'),
+                        dataTableOutput("single_cv"),
+                        HTML('<br>'),
+                        HTML('<br>'),
+                        HTML('<center><h2>單店小時CRS/VRS效率值比較</h2></center>'),
+                        plotOutput("single_cv_plot"),
+                        HTML('<br>'),
+                        HTML('<br>'),
+                        HTML('<center><h2>單店小時CRS/VRS效率前緣圖</h2></center>'),
+                        plotOutput("single_frontier_plot"),
+                        HTML('<br>')
+               ),
+               tabPanel("Weekday", 
+                        HTML('<center><h2>單店周間指標平均值</h2></center>'),
+                        dataTableOutput("single_weekday_mean"),
+                        HTML('<br>'),
+                        HTML('<br>'),
+                        HTML('<center><h2>單店周間CRS/VRS值</h2></center>'),
+                        dataTableOutput("single_weekday_cv"),
+                        HTML('<br>'),
+                        HTML('<br>'),
+                        HTML('<center><h2>單店周間CRS/VRS效率值比較</h2></center>'),
+                        plotOutput("single_weekday_cv_plot"),
+                        HTML('<br>'),
+                        HTML('<br>'),
+                        HTML('<center><h2>單店周間CRS/VRS效率前緣圖</h2></center>'),
+                        plotOutput("single_weekday_frontier_plot"),
+                        HTML('<br>')
+               ),
+               tabPanel("Weekend", 
+                        HTML('<center><h2>單店周末指標平均值</h2></center>'),
+                        dataTableOutput("single_weekend_mean"),
+                        HTML('<br>'),
+                        HTML('<br>'),
+                        HTML('<center><h2>單店周末CRS/VRS值</h2></center>'),
+                        dataTableOutput("single_weekend_cv"),
+                        HTML('<br>'),
+                        HTML('<br>'),
+                        HTML('<center><h2>單店周末CRS/VRS效率值比較</h2></center>'),
+                        plotOutput("single_weekend_cv_plot"),
+                        HTML('<br>'),
+                        HTML('<br>'),
+                        HTML('<center><h2>單店周末CRS/VRS效率前緣圖</h2></center>'),
+                        plotOutput("single_weekend_frontier_plot"),
+                        HTML('<br>')
+               )
+             )
+             
+    )
+  
+    
+  , fluid = TRUE)
+))

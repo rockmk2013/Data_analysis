@@ -1,0 +1,9 @@
+library(shiny)
+
+shinyServer(function(input, output) {
+  source('tabDEA.R', local=TRUE, encoding = "utf-8")
+  source('tabFA.R', local=TRUE, encoding = "utf-8")
+  source('tabRF.R', local=TRUE, encoding = "utf-8")
+  source('tabFQA.R', local=TRUE, encoding = "utf-8")
+  source('tabSINDEA.R',local=TRUE , encoding = "utf-8")
+})
