@@ -1,6 +1,6 @@
 shinyUI(fluidPage(
   
-  titlePanel(h1("SkyREC Data Analysis")),
+  titlePanel("SkyREC Data Analysis"),
   
   navlistPanel(
     
