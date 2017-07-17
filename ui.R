@@ -1,5 +1,3 @@
-library(shiny)
-library(rpart)
 shinyUI(fluidPage(
   
   titlePanel(h1("SkyREC Data Analysis")),
@@ -26,7 +24,7 @@ shinyUI(fluidPage(
                           ".csv")
              ),
              HTML('<br>'),
-             h2("請選擇單一店家資料(小時)"),
+             h2("請選擇單一店家資料"),
              HTML('<br>'),
              HTML('<center><img src="single.png" height=auto width=auto></center>'),
              HTML('<br>'),
@@ -36,16 +34,7 @@ shinyUI(fluidPage(
                          "text/comma-separated-values,text/plain",
                          ".csv")
              ),
-             HTML('<br><br>'),
-             h2("請選擇單一店家資料(天)"),
-             HTML('<br>'),
-             HTML('<br>'),
-             fileInput("single_day", "Choose CSV File",
-                       accept = c(
-                         "text/csv",
-                         "text/comma-separated-values,text/plain",
-                         ".csv")
-             )
+             HTML('<br><br>')
              
     ),
     
@@ -152,10 +141,24 @@ shinyUI(fluidPage(
                         HTML('<center><h2>營業額決策樹</h2></center>'),
                         plotOutput("revenue_rf_tree"),
                         HTML('<br>'),
+                        HTML('<br>'), 
+                        HTML('<center><h2>邊際效益變化圖</h2></center>'),
+                        plotOutput("revenue_partial"),
+                        HTML('<br>'),
                         HTML('<br>')
                ),
-               tabPanel("Instore Traffic", 
-                        HTML('<center><h2>各分店周間指標平均值</h2></center>'),
+               tabPanel("Instore Traffic",
+                        HTML('<center><h2>各變數對店內人數的影響程度</h2></center>'),
+                        plotOutput("instore_rf_imp"),
+                        HTML('<br>'),
+                        HTML('<br>'),
+                        HTML('<center><h2>店內人數決策樹</h2></center>'),
+                        plotOutput("instore_rf_tree"),
+                        HTML('<br>'),
+                        HTML('<br>'),
+                        HTML('<center><h2>邊際效益變化圖</h2></center>'),
+                        plotOutput("instore_partial"),
+                        HTML('<br>'),
                         HTML('<br>')
                )
              )
