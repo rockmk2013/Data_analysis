@@ -62,11 +62,13 @@ draw_fqa <- function(multi){
            ylim=c(0,y_max),
            ann = FALSE,
            lwd=8,
+           cex=3,
            las=1)
       points(slicedata[[i]]$multistore_week.mean_instore_weekend,
              slicedata[[i]]$multistore_week.mean_sales_weekend,
              pch=17,
              col=colortype[i],
+             cex=3,
              lwd=8)
       abline(v=x_max/2,h=y_max/2)
       legend("bottomright",                                # 表示在右上角
@@ -89,11 +91,13 @@ draw_fqa <- function(multi){
              slicedata[[i]]$multistore_week.mean_sales_week,
              pch=16,
              col=colortype[i],
+             cex=3,
              lwd=8)
       points(slicedata[[i]]$multistore_week.mean_instore_weekend,
              slicedata[[i]]$multistore_week.mean_sales_weekend,
              pch=17,
              col=colortype[i],
+             cex=3,
              lwd=8)
       # lines(slicedata[[i]]$multistore_week.mean_instore_week:slicedata[[i]]$multistore_week.mean_instore_weekend,
       #       slicedata[[i]]$multistore_week.mean_sales_week:slicedata[[i]]$multistore_week.mean_sales_weekend,
