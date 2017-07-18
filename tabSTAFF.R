@@ -122,7 +122,8 @@ plotfun<-function(num,summary,dat){
       panel.border = element_blank(),
       axis.text.y = element_blank(),
       axis.title.y = element_blank(),
-      plot.title = element_text(hjust = 0.5,size=12)
+      plot.title = element_text(hjust = 0.5,size=12),
+      axis.text.x = element_text(size=16)
     )
   return(g)
 }  
