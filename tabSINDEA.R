@@ -44,7 +44,7 @@ single_dea_calculate <- function(single,single_mean){
   cv_plot <- ggplot(store_full_new, aes(x=as.factor(Time), y=value, fill=variable)) +
     geom_bar(stat='identity', position='dodge') + xlab("時間") +
     ylab("效率值")+ scale_y_continuous(breaks=seq(0,1,0.1)) + 
-    theme(plot.title = element_text(hjust = 0.5)) + scale_fill_discrete(name = "方法")
+    theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(size=16),axis.text.y = element_text(size=16)) + scale_fill_discrete(name = "方法")
   
   return(  list("mean_table" = mean_table, 
                 "frontier" = p,

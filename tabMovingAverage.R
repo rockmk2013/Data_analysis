@@ -10,7 +10,8 @@ output$revenue_hourly = renderPlot({
     geom_point(pch=21,fill="#7B7B7B") +
     geom_smooth(colour="darkgoldenrod1", size=1.5, method="loess", 
                 span=0.3, se=FALSE)+
-    theme_bw()
+    theme_bw()+
+    theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(size=10),axis.text.y = element_text(size=14))
 })
 
 output$transaction_hourly = renderPlot({
@@ -21,7 +22,8 @@ output$transaction_hourly = renderPlot({
     geom_point(pch=21,fill="#7B7B7B") +
     geom_smooth(colour="darkgoldenrod1", size=1.5, method="loess", 
                 span=0.3, se=FALSE)+
-    theme_bw()
+    theme_bw()+
+    theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(size=10),axis.text.y = element_text(size=14))
 })
 
 output$revenue_daily = renderPlot({
@@ -33,7 +35,8 @@ output$revenue_daily = renderPlot({
     geom_point(pch=21,fill="#7B7B7B") +
     geom_smooth(colour="darkgoldenrod1", size=1.5, method="loess", 
                 span=0.3, se=FALSE)+
-    theme_bw()
+    theme_bw()+
+    theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(size=10),axis.text.y = element_text(size=14))
 })
 
 output$transaction_daily = renderPlot({
@@ -44,5 +47,6 @@ output$transaction_daily = renderPlot({
     geom_point(pch=21,fill="#7B7B7B") +
     geom_smooth(colour="darkgoldenrod1", size=1.5, method="loess", 
                 span=0.3, se=FALSE)+
-    theme_bw()
+    theme_bw()+
+    theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(size=10),axis.text.y = element_text(size=14))
 })
