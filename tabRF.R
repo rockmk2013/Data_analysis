@@ -19,23 +19,13 @@ rf_return <- reactive({
   # Train the model
   revenue.rf <- randomForest(Revenue ~ ., data= revenue_train, importance=TRUE,proximity=TRUE,ntree = 200)
   instore.rf <- randomForest(InstoreTraffic ~ ., data= instore_train, importance=TRUE,proximity=TRUE,ntree = 200)
-  # revenue_rf_tree
-  revenue_tree<-rpart(Revenue~. ,revenue_train)
-  rpart.plot::rpart.plot(revenue_tree)
-  revenue_rf_tree <- recordPlot()
-  # instore_rf_tree
-  instore_tree<-rpart(InstoreTraffic~. ,instore_train)
-  rpart.plot::rpart.plot(instore_tree)
-  instore_rf_tree <- recordPlot()
   
   revenue_data <- rf_imp_partial(revenue.rf,revenue_train)
   instore_data <- rf_imp_partial(instore.rf,instore_train)
   
   list("revenue_rf_imp" = revenue_data[["rf_imp"]],
-       "revenue_rf_tree" = revenue_rf_tree,
        "revenue_partial" = revenue_data[["partial"]],
        "instore_rf_imp" = instore_data[["rf_imp"]],
-       "instore_rf_tree" = instore_rf_tree,
        "instore_partial" = instore_data[["partial"]]
   )
 })
@@ -88,11 +78,6 @@ output$revenue_rf_imp = renderPlot({
   print(revenue_rf_imp)
 })
 
-output$revenue_rf_tree = renderPlot({
-  revenue_rf_tree <- rf_return()[["revenue_rf_tree"]]
-  print(revenue_rf_tree)
-})
-
 output$revenue_partial = renderPlot({
   revenue_partial <- rf_return()[["revenue_partial"]]
   print(revenue_partial)
@@ -101,11 +86,6 @@ output$revenue_partial = renderPlot({
 output$instore_rf_imp = renderPlot({
   instore_rf_imp <- rf_return()[["instore_rf_imp"]]
   print(instore_rf_imp)
-})
-
-output$instore_rf_tree = renderPlot({
-  instore_rf_tree <- rf_return()[["instore_rf_tree"]]
-  print(instore_rf_tree)
 })
 
 output$instore_partial = renderPlot({

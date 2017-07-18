@@ -1,9 +1,12 @@
-shinyUI(fluidPage(
+shinyUI(fluidPage(theme = shinytheme("journal"),
+  tags$head(
+    tags$link(rel = "stylesheet", type = "text/css", href = "tmp.css")
+  ),
   
-  titlePanel("SkyREC Data Analysis"),
+  titlePanel(div(img(height = 50, width = 120, align = "center", src = "skyrec.png"),"Data Analyst")),
+  
   
   navlistPanel(
-    
     "Methods",
     tabPanel("Flowchart",
              h2('Flowchart'),
@@ -182,10 +185,6 @@ shinyUI(fluidPage(
                         plotOutput("revenue_rf_imp"),
                         HTML('<br>'),
                         HTML('<br>'),
-                        HTML('<center><h2>營業額決策樹</h2></center>'),
-                        plotOutput("revenue_rf_tree"),
-                        HTML('<br>'),
-                        HTML('<br>'), 
                         HTML('<center><h2>邊際效益變化圖</h2></center>'),
                         plotOutput("revenue_partial"),
                         HTML('<br>'),
@@ -194,10 +193,6 @@ shinyUI(fluidPage(
                tabPanel("Instore Traffic",
                         HTML('<center><h2>各變數對店內人數的影響程度</h2></center>'),
                         plotOutput("instore_rf_imp"),
-                        HTML('<br>'),
-                        HTML('<br>'),
-                        HTML('<center><h2>店內人數決策樹</h2></center>'),
-                        plotOutput("instore_rf_tree"),
                         HTML('<br>'),
                         HTML('<br>'),
                         HTML('<center><h2>邊際效益變化圖</h2></center>'),
