@@ -212,8 +212,7 @@ shinyUI(fluidPage(
              tabsetPanel(
                tabPanel("Overall",
                         HTML('<center><h2>總調整人數</h2></center>'),
-                        dataTableOutput("singleframe"),
-                        verbatimTextOutput("Mean")
+                        dataTableOutput("singleframe")
                ),
                tabPanel("Monday",
                         HTML('<center><h2>周一排班圖</h2></center>'),

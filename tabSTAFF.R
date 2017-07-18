@@ -22,8 +22,6 @@ staff_return <- reactive({
   
   singleframe<-create_table(summary_list)
   
-  Mean<-calculate_change(singleframe)
-  
   tablelist<-lapply(1:7,find_daychange,summary_list)
   names(tablelist)<-c('Monday_table','Tuesday_table','Wednesday_table','Thursday_table',
                       'Friday_table','Saturday_table','Sunday_table')
@@ -31,7 +29,7 @@ staff_return <- reactive({
   plotlist<-lapply(1:7,plotfun,summary_list,data_list)
   names(plotlist)<-c('Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday')
 
-  c(list("singleframe"=singleframe),plotlist,"Mean"= Mean,tablelist)
+  c(list("singleframe"=singleframe),plotlist,tablelist)
 })
 
 
@@ -82,18 +80,10 @@ create_table<-function(summary){
   singleframe<-sapply(1:7,function(x)round(summary[[x]][["perdif"]],1))
   Time<-as.data.frame(summary[[1]][[1]])
   singleframe<-cbind(Time,singleframe)
-  vector<-c("Average",colMeans(singleframe[-1]))
+  vector<-c("Sum",colSums(singleframe[-1]))
   singleframe<-rbind(singleframe,vector)
   colnames(singleframe)<-c("Time",names(summary))
   return(singleframe)
-}
-
-calculate_change<-function(df){
-  df<-df[-nrow(df),-1]
-  df<-sapply(df,as.numeric)
-  Mean<-mean(colMeans(df))
-  Mean<-round(Mean,2)
-  return(Mean)
 }
 
 find_daychange<-function(num,summary){
@@ -200,9 +190,4 @@ output$Saturday = renderPlot({
 output$Sunday = renderPlot({
   Sunday <- staff_return()[["Sunday"]]
   print(Sunday)
-})
-
-output$Mean = renderPrint({
-  Mean<-staff_return()[["Mean"]]
-  print(paste0("平均每小時員工變動量為",Mean,"人"))
 })
