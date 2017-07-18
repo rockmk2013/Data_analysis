@@ -34,12 +34,22 @@ shinyUI(fluidPage(
                          "text/comma-separated-values,text/plain",
                          ".csv")
              ),
-             HTML('<br><br>'),
+             HTML('<br>'),
              h2("請選擇單一店家資料(天)"),
              HTML('<br>'),
              HTML('<center><img src="Daily.png" height=auto width=auto></center>'),
              HTML('<br>'),
              fileInput("daily", "Choose CSV File",
+                       accept = c(
+                         "text/csv",
+                         "text/comma-separated-values,text/plain",
+                         ".csv")
+             ),HTML('<br>'),
+             h2("請選擇單一店家排班資料"),
+             HTML('<br>'),
+             HTML('<center><img src="agent.png" height=auto width=auto></center>'),
+             HTML('<br>'),
+             fileInput("agent", "Choose CSV File",
                        accept = c(
                          "text/csv",
                          "text/comma-separated-values,text/plain",
@@ -198,7 +208,64 @@ shinyUI(fluidPage(
              )
              
     ),
-    tabPanel("Agent Schedule Optimization"),
+    tabPanel("Agent Schedule Optimization",
+             tabsetPanel(
+               tabPanel("Overall",
+                        HTML('<center><h2>總調整人數</h2></center>'),
+                        dataTableOutput("singleframe"),
+                        verbatimTextOutput("Mean")
+               ),
+               tabPanel("Monday",
+                        HTML('<center><h2>周一排班圖</h2></center>'),
+                        plotOutput("Monday"),
+                        HTML('<br>'),
+                        HTML('<center><h2>原始排班與建議排班</h2></center>'),
+                        dataTableOutput("Monday_table")
+               ),
+               tabPanel("Tuesday",
+                        HTML('<center><h2>周二排班圖</h2></center>'),
+                        plotOutput("Tuesday"),
+                        HTML('<br>'),
+                        HTML('<center><h2>原始排班與建議排班</h2></center>'),
+                        dataTableOutput("Tuesday_table")
+               ),
+               tabPanel("Wednesday",
+                        HTML('<center><h2>周三排班圖</h2></center>'),
+                        plotOutput("Wednesday"),
+                        HTML('<br>'),
+                        HTML('<center><h2>原始排班與建議排班</h2></center>'),
+                        dataTableOutput("Wednesday_table")
+               ),
+               tabPanel("Thursday",
+                        HTML('<center><h2>周四排班圖</h2></center>'),
+                        plotOutput("Thursday"),
+                        HTML('<br>'),
+                        HTML('<center><h2>原始排班與建議排班</h2></center>'),
+                        dataTableOutput("Thursday_table")
+               ),
+               tabPanel("Friday",
+                        HTML('<center><h2>周五排班圖</h2></center>'),
+                        plotOutput("Friday"),
+                        HTML('<br>'),
+                        HTML('<center><h2>原始排班與建議排班</h2></center>'),
+                        dataTableOutput("Friday_table")
+               ),
+               tabPanel("Saturday",
+                        HTML('<center><h2>周六排班圖</h2></center>'),
+                        plotOutput("Saturday"),
+                        HTML('<br>'),
+                        HTML('<center><h2>原始排班與建議排班</h2></center>'),
+                        dataTableOutput("Saturday_table")
+               ),
+               tabPanel("Sunday",
+                        HTML('<center><h2>周日排班圖</h2></center>'),
+                        plotOutput("Sunday"),
+                        HTML('<br>'),
+                        HTML('<center><h2>原始排班與建議排班</h2></center>'),
+                        dataTableOutput("Sunday_table")
+               )
+             )
+    ),
     tabPanel("Data Envelopment Analysis",
              tabsetPanel(
                tabPanel("All", 
