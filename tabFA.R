@@ -38,7 +38,10 @@ fa_return <- reactive({
                          high = "blue", mid = "white", low = "red", 
                          midpoint=0, guide="colourbar") +
     ylab("Loading Strength") + 
-    theme_bw(base_size=14)
+    theme_bw(base_size=14)+
+    theme(axis.title=element_text(size=16),
+          axis.text.x = element_text(size=16),
+          axis.text.y = element_text(size=16))
   #fa_plot2
   fa.diagram(fa,Phi=NULL,fe.results=NULL,sort=TRUE,labels=NULL,cut=.5,
              simple=TRUE, errors=FALSE,g=FALSE,digits=1,e.size=.05,rsize=.15,side=2,cex=NULL,marg=c(.5,.5,1,.5),adj=1)
@@ -100,6 +103,10 @@ store_to_plot <- function(fa_store){
   fa_store_plot <- fa_store_plot + scale_y_continuous(limits = c(y_med - y_width,y_med + y_width))
   fa_store_plot <- fa_store_plot + geom_vline(xintercept = median(fa_store$F1)) + geom_hline(yintercept = median(fa_store$F2))
   fa_store_plot <- fa_store_plot + theme(legend.position="none")
+  fa_store_plot <- fa_store_plot + 
+  theme(axis.title=element_text(size=16),
+        axis.text.x = element_text(size=16),
+        axis.text.y = element_text(size=16))
   return(fa_store_plot)
 }
 

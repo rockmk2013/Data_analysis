@@ -112,7 +112,8 @@ plotfun<-function(num,summary,dat){
       axis.text.y = element_blank(),
       axis.title.y = element_blank(),
       plot.title = element_text(hjust = 0.5,size=16),
-      axis.text.x = element_text(size=16)
+      axis.text.x = element_text(size=16),
+      axis.title.x = element_text(size=14)
     )
   return(g)
 }  

@@ -12,7 +12,8 @@ output$revenue_hourly = renderPlot({
     geom_smooth(colour="darkgoldenrod1", size=1.5, method="loess", 
                 span=0.3, se=FALSE)+
     theme_bw()+
-    theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(size=10),axis.text.y = element_text(size=14))
+    theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(size=10),axis.text.y = element_text(size=14),
+            axis.title=element_text(size=16))
 })
 
 output$transaction_hourly = renderPlot({
@@ -24,7 +25,8 @@ output$transaction_hourly = renderPlot({
     geom_smooth(colour="darkgoldenrod1", size=1.5, method="loess", 
                 span=0.3, se=FALSE)+
     theme_bw()+
-    theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(size=10),axis.text.y = element_text(size=14))
+    theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(size=10),axis.text.y = element_text(size=14),
+          axis.title=element_text(size=16))
 })
 
 output$revenue_daily = renderPlot({
@@ -37,8 +39,9 @@ output$revenue_daily = renderPlot({
     geom_smooth(colour="darkgoldenrod1", size=1.5, method="loess", 
                 span=0.3, se=FALSE)+
     theme_bw()+
-    theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(size=10),axis.text.y = element_text(size=14))
-})
+    theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(size=10),axis.text.y = element_text(size=14)
+  ,axis.title=element_text(size=16))
+  })
 
 output$transaction_daily = renderPlot({
   daily <- input$daily
@@ -49,7 +52,8 @@ output$transaction_daily = renderPlot({
     geom_smooth(colour="darkgoldenrod1", size=1.5, method="loess", 
                 span=0.3, se=FALSE)+
     theme_bw()+
-    theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(size=10),axis.text.y = element_text(size=14))
+    theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(size=10),axis.text.y = element_text(size=14)
+          ,axis.title=element_text(size=16))
 })
 
 
@@ -69,7 +73,9 @@ output$Month_of_year = renderPlot({
     stat_summary(fun.Conversion=mean, colour="grey",lwd=1.5, geom="line",aes(group = 1))+
     theme_bw()+
     theme(
-      axis.title.x = element_blank()
+      axis.title=element_text(size=16),
+      axis.text.x = element_text(size=16),
+      axis.text.y = element_text(size=16)
     )
   
   b<-daily %>%
@@ -78,7 +84,9 @@ output$Month_of_year = renderPlot({
     stat_summary(fun.InstoreTraffic=mean, colour="grey",lwd=1.5, geom="line",aes(group = 1))+
     theme_bw()+
     theme(
-      axis.title.x = element_blank()
+      axis.title=element_text(size=16),
+      axis.text.x = element_text(size=16),
+      axis.text.y = element_text(size=16)
     )
   
   c<-daily %>%
@@ -87,7 +95,9 @@ output$Month_of_year = renderPlot({
     stat_summary(fun.Revenue=mean, colour="grey",lwd=1.5, geom="line",aes(group = 1))+
     theme_bw()+
     theme(
-      axis.title.x = element_blank()
+      axis.title=element_text(size=16),
+      axis.text.x = element_text(size=16),
+      axis.text.y = element_text(size=16)
     )
   
   print(grid.arrange(a,b,c))

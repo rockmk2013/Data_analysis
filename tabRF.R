@@ -52,7 +52,8 @@ rf_imp_partial <- function(rf,train){
     xlab(" ")+
     theme( plot.title = element_text(hjust = 0.5,size=12),
            axis.text.x = element_text(size=16),
-           axis.text.y = element_text(size=12))
+           axis.text.y = element_text(size=16),
+           axis.title=element_text(size=16))
   return(list("rf_imp" = rf_imp,"partial" = partial))
 }
 

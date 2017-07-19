@@ -159,7 +159,7 @@ shinyUI(fluidPage(theme = shinytheme("journal"),
                              HTML('<br>')
                     ),
                     "Single Store",
-                    tabPanel("Moving Average Analysis",
+                    tabPanel("Trend Analysis",
                              tabsetPanel(
                                tabPanel("Hourly",
                                         HTML('<center><h2>Revenue vs InstoreTraffic</h2></center>'),
