@@ -17,6 +17,7 @@ dea_return <- reactive({
   list("all" = all,
        "weekday" = weekday,
        "weekend" = weekend)
+  
 })
 
 dea_calculate <- function(multi,multi_mean){
@@ -29,9 +30,10 @@ dea_calculate <- function(multi,multi_mean){
   X=matrix(multi_mean$mean_instore,ncol=1)
   Y=cbind(multi_mean$mean_sales,multi_mean$mean_transaction)
   # frontier
-  p <- recordPlot()
+  
   frontier <- dea.plot.frontier(X,Y,txt=store_name,col="red", RTS="vrs",lwd=3)
   frontier <- frontier + dea.plot.frontier(X,Y,txt=store_name,col="red", RTS="crs",lwd=3,add=TRUE,lty="dashed")
+  
   # store_full
   crs <- 1 / eff(dea(X,Y,RTS = "crs",ORIENTATION = "out"))
   vrs <- 1 / eff(dea(X,Y,RTS = "vrs",ORIENTATION = "out"))
@@ -45,11 +47,12 @@ dea_calculate <- function(multi,multi_mean){
     geom_bar(stat='identity', position='dodge') + xlab("店名") +
     ylab("效率值")+ scale_y_continuous(breaks=seq(0,1,0.1)) + 
     theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(size=16),axis.text.y = element_text(size=16)) + scale_fill_discrete(name = "方法")
-  
-  return(  list("mean_table" = mean_table, 
+  p <- recordPlot()
+  return(  list("mean_table" = mean_table,
                 "frontier" = p,
                 "store_full" = store_full,
                 "cv_plot" = cv_plot))
+  
 }
 
 storesummary <- function(df, group, selection){
@@ -93,6 +96,24 @@ output$multi_cv_plot = renderPlot({
 })
 
 output$multi_frontier_plot = renderPlot({
+  # multi <- input$multi
+  # multi <- read.table(multi$datapath,sep = ",",header = TRUE,encoding = "utf-8")
+  # multidata <- findmean(multi)
+  # multi_all_mean <- multidata$multistore_dea
+  # 
+  # mean_table <- multi_all_mean
+  # mean_table[,-1] <- round(mean_table[,-1], digits = 2)
+  # rownames(mean_table) <- NULL
+  # store_name <- unique(multi[,1])
+  # multi_all_mean <- data.frame(apply(multi_all_mean[,-1],2,function(x) x / mean(x)))
+  # X=matrix(multi_all_mean$mean_instore,ncol=1)
+  # Y=cbind(multi_all_mean$mean_sales,multi_all_mean$mean_transaction)
+  # 
+  # # frontier
+  # dea.plot.frontier(X,Y,txt=store_name,col="red", RTS="vrs",lwd=3)
+  # dea.plot.frontier(X,Y,txt=store_name,col="red", RTS="crs",lwd=3,add=TRUE,lty="dashed")
+
+
   frontier <- dea_return()[["all"]][["frontier"]]
   return(frontier)
 })
@@ -113,6 +134,24 @@ output$multi_weekday_cv_plot = renderPlot({
 })
 
 output$multi_weekday_frontier_plot = renderPlot({
+  # multi <- input$multi
+  # multi <- read.table(multi$datapath,sep = ",",header = TRUE,encoding = "utf-8")
+  # multidata <- findmean(multi)
+  # multi_weekday_mean <- multidata$multistore_weekday
+  # 
+  # mean_table <- multi_weekday_mean
+  # mean_table[,-1] <- round(mean_table[,-1], digits = 2)
+  # rownames(mean_table) <- NULL
+  # store_name <- unique(multi[,1])
+  # multi_weekday_mean <- data.frame(apply(multi_weekday_mean[,-1],2,function(x) x / mean(x)))
+  # X=matrix(multi_weekday_mean$mean_instore,ncol=1)
+  # Y=cbind(multi_weekday_mean$mean_sales,multi_weekday_mean$mean_transaction)
+
+  # # frontier
+  # dea.plot.frontier(X,Y,txt=store_name,col="red", RTS="vrs",lwd=3)
+  # dea.plot.frontier(X,Y,txt=store_name,col="red", RTS="crs",lwd=3,add=TRUE,lty="dashed")
+
+
   frontier <- dea_return()[["weekday"]][["frontier"]]
   return(frontier)
 })
@@ -133,6 +172,24 @@ output$multi_weekend_cv_plot = renderPlot({
 })
 
 output$multi_weekend_frontier_plot = renderPlot({
+  # multi <- input$multi
+  # multi <- read.table(multi$datapath,sep = ",",header = TRUE,encoding = "utf-8")
+  # multidata <- findmean(multi)
+  # multi_weekend_mean <- multidata$multistore_weekend
+  # 
+  # mean_table <- multi_weekend_mean
+  # mean_table[,-1] <- round(mean_table[,-1], digits = 2)
+  # rownames(mean_table) <- NULL
+  # store_name <- unique(multi[,1])
+  # multi_weekend_mean <- data.frame(apply(multi_weekend_mean[,-1],2,function(x) x / mean(x)))
+  # X=matrix(multi_weekend_mean$mean_instore,ncol=1)
+  # Y=cbind(multi_weekend_mean$mean_sales,multi_weekend_mean$mean_transaction)
+  # 
+  # # frontier
+  # dea.plot.frontier(X,Y,txt=store_name,col="red", RTS="vrs",lwd=3)
+  # dea.plot.frontier(X,Y,txt=store_name,col="red", RTS="crs",lwd=3,add=TRUE,lty="dashed")
+
+
   frontier <- dea_return()[["weekend"]][["frontier"]]
   return(frontier)
 })

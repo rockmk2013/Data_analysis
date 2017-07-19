@@ -1,6 +1,7 @@
 library(readr)
 library(dplyr)
 library(ggplot2)
+library(gridExtra)
 
 output$revenue_hourly = renderPlot({
   single <- input$single

@@ -1,3 +1,4 @@
+library(shinythemes)
 shinyUI(fluidPage(theme = shinytheme("journal"),
                   tags$head(
                     tags$link(rel = "stylesheet", type = "text/css", href = "tmp.css")

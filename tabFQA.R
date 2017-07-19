@@ -134,4 +134,3 @@ output$multi_weekend_plot = renderPlot({
   }
   
 })
-
