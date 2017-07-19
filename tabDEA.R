@@ -1,7 +1,8 @@
 library(shiny)
-library(DT)
+library(Benchmarking)
 library(ggplot2)
 library(dplyr)
+library(reshape2)
 
 dea_return <- reactive({
   # Read data
@@ -30,16 +31,15 @@ dea_calculate <- function(multi,multi_mean){
   X=matrix(multi_mean$mean_instore,ncol=1)
   Y=cbind(multi_mean$mean_sales,multi_mean$mean_transaction)
   # frontier
-  
   frontier <- dea.plot.frontier(X,Y,txt=store_name,col="red", RTS="vrs",lwd=3)
   frontier <- frontier + dea.plot.frontier(X,Y,txt=store_name,col="red", RTS="crs",lwd=3,add=TRUE,lty="dashed")
-  
   # store_full
   crs <- 1 / eff(dea(X,Y,RTS = "crs",ORIENTATION = "out"))
   vrs <- 1 / eff(dea(X,Y,RTS = "vrs",ORIENTATION = "out"))
   store_full <- data.frame(cbind(store_name,crs,vrs))
   colnames(store_full) <- c("StoreName","CRS","VRS")
   rownames(store_full) <- NULL
+  p <- recordPlot()
   # multi_cv_plot
   store_full_new <- melt(store_full, id.vars = 'StoreName')
   store_full_new$value <- as.numeric(store_full_new$value)
@@ -47,7 +47,7 @@ dea_calculate <- function(multi,multi_mean){
     geom_bar(stat='identity', position='dodge') + xlab("店名") +
     ylab("效率值")+ scale_y_continuous(breaks=seq(0,1,0.1)) + 
     theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(size=16),axis.text.y = element_text(size=16)) + scale_fill_discrete(name = "方法")
-  p <- recordPlot()
+  
   return(  list("mean_table" = mean_table,
                 "frontier" = p,
                 "store_full" = store_full,
@@ -81,115 +81,62 @@ findmean <- function(multi){
 
 output$multi_mean = renderDataTable({
   mean_table <- dea_return()[["all"]][["mean_table"]]
-  return(DT::datatable(mean_table, options = list(searching = FALSE, paging = FALSE)))
-  
+  #print(DT::datatable(mean_table, options = list(searching = FALSE, paging = FALSE)))
 })
 
 output$multi_cv = renderDataTable({
   store_full <- dea_return()[["all"]][["store_full"]]
-  return(DT::datatable(store_full, options = list(searching = FALSE, paging = FALSE)))
+  #print(DT::datatable(store_full, options = list(searching = FALSE, paging = FALSE)))
 })
 
 output$multi_cv_plot = renderPlot({
   multi_cv_plot <- dea_return()[["all"]][["cv_plot"]]
-  return(multi_cv_plot)
+  print(multi_cv_plot)
 })
 
 output$multi_frontier_plot = renderPlot({
-  # multi <- input$multi
-  # multi <- read.table(multi$datapath,sep = ",",header = TRUE,encoding = "utf-8")
-  # multidata <- findmean(multi)
-  # multi_all_mean <- multidata$multistore_dea
-  # 
-  # mean_table <- multi_all_mean
-  # mean_table[,-1] <- round(mean_table[,-1], digits = 2)
-  # rownames(mean_table) <- NULL
-  # store_name <- unique(multi[,1])
-  # multi_all_mean <- data.frame(apply(multi_all_mean[,-1],2,function(x) x / mean(x)))
-  # X=matrix(multi_all_mean$mean_instore,ncol=1)
-  # Y=cbind(multi_all_mean$mean_sales,multi_all_mean$mean_transaction)
-  # 
-  # # frontier
-  # dea.plot.frontier(X,Y,txt=store_name,col="red", RTS="vrs",lwd=3)
-  # dea.plot.frontier(X,Y,txt=store_name,col="red", RTS="crs",lwd=3,add=TRUE,lty="dashed")
-
-
   frontier <- dea_return()[["all"]][["frontier"]]
-  return(frontier)
+  print(frontier)
 })
 
 output$multi_weekday_mean = renderDataTable({
-  store_full <- dea_return()[["weekday"]][["mean_table"]]
-  return(DT::datatable(store_full, options = list(searching = FALSE, paging = FALSE)))
+  mean_table <- dea_return()[["weekday"]][["mean_table"]]
+  #print(DT::datatable(mean_table, options = list(searching = FALSE, paging = FALSE)))
 })
 
 output$multi_weekday_cv = renderDataTable({
   store_full <- dea_return()[["weekday"]][["store_full"]]
-  return(DT::datatable(store_full, options = list(searching = FALSE, paging = FALSE)))
+  #print(DT::datatable(store_full, options = list(searching = FALSE, paging = FALSE)))
 })
 
 output$multi_weekday_cv_plot = renderPlot({
   multi_cv_plot <- dea_return()[["weekday"]][["cv_plot"]]
-  return(multi_cv_plot)
+  print(multi_cv_plot)
 })
 
 output$multi_weekday_frontier_plot = renderPlot({
-  # multi <- input$multi
-  # multi <- read.table(multi$datapath,sep = ",",header = TRUE,encoding = "utf-8")
-  # multidata <- findmean(multi)
-  # multi_weekday_mean <- multidata$multistore_weekday
-  # 
-  # mean_table <- multi_weekday_mean
-  # mean_table[,-1] <- round(mean_table[,-1], digits = 2)
-  # rownames(mean_table) <- NULL
-  # store_name <- unique(multi[,1])
-  # multi_weekday_mean <- data.frame(apply(multi_weekday_mean[,-1],2,function(x) x / mean(x)))
-  # X=matrix(multi_weekday_mean$mean_instore,ncol=1)
-  # Y=cbind(multi_weekday_mean$mean_sales,multi_weekday_mean$mean_transaction)
-
-  # # frontier
-  # dea.plot.frontier(X,Y,txt=store_name,col="red", RTS="vrs",lwd=3)
-  # dea.plot.frontier(X,Y,txt=store_name,col="red", RTS="crs",lwd=3,add=TRUE,lty="dashed")
-
 
   frontier <- dea_return()[["weekday"]][["frontier"]]
-  return(frontier)
+  print(frontier)
 })
 
 output$multi_weekend_mean = renderDataTable({
-  store_full <- dea_return()[["weekend"]][["mean_table"]]
-  return(DT::datatable(store_full, options = list(searching = FALSE, paging = FALSE)))
+  mean_table <- dea_return()[["weekend"]][["mean_table"]]
+  #print(DT::datatable(mean_table, options = list(searching = FALSE, paging = FALSE)))
 })
 
 output$multi_weekend_cv = renderDataTable({
   store_full <- dea_return()[["weekend"]][["store_full"]]
-  return(DT::datatable(store_full, options = list(searching = FALSE, paging = FALSE)))
+  #print(DT::datatable(store_full, options = list(searching = FALSE, paging = FALSE)))
 })
 
 output$multi_weekend_cv_plot = renderPlot({
   multi_cv_plot <- dea_return()[["weekend"]][["cv_plot"]]
-  return(multi_cv_plot)
+  print(multi_cv_plot)
 })
 
 output$multi_weekend_frontier_plot = renderPlot({
-  # multi <- input$multi
-  # multi <- read.table(multi$datapath,sep = ",",header = TRUE,encoding = "utf-8")
-  # multidata <- findmean(multi)
-  # multi_weekend_mean <- multidata$multistore_weekend
-  # 
-  # mean_table <- multi_weekend_mean
-  # mean_table[,-1] <- round(mean_table[,-1], digits = 2)
-  # rownames(mean_table) <- NULL
-  # store_name <- unique(multi[,1])
-  # multi_weekend_mean <- data.frame(apply(multi_weekend_mean[,-1],2,function(x) x / mean(x)))
-  # X=matrix(multi_weekend_mean$mean_instore,ncol=1)
-  # Y=cbind(multi_weekend_mean$mean_sales,multi_weekend_mean$mean_transaction)
-  # 
-  # # frontier
-  # dea.plot.frontier(X,Y,txt=store_name,col="red", RTS="vrs",lwd=3)
-  # dea.plot.frontier(X,Y,txt=store_name,col="red", RTS="crs",lwd=3,add=TRUE,lty="dashed")
-
-
+  
   frontier <- dea_return()[["weekend"]][["frontier"]]
-  return(frontier)
+  print(frontier)
 })

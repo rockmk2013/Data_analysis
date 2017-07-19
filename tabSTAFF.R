@@ -1,5 +1,4 @@
 library(shiny)
-library(DT)
 library(ggplot2)
 library(dplyr)
 
@@ -112,7 +111,7 @@ plotfun<-function(num,summary,dat){
       panel.border = element_blank(),
       axis.text.y = element_blank(),
       axis.title.y = element_blank(),
-      plot.title = element_text(hjust = 0.5,size=12),
+      plot.title = element_text(hjust = 0.5,size=16),
       axis.text.x = element_text(size=16)
     )
   return(g)
@@ -120,42 +119,42 @@ plotfun<-function(num,summary,dat){
 
 output$singleframe = renderDataTable({
   singleframe <- staff_return()[["singleframe"]]
-  print(DT::datatable(singleframe, options = list(searching = FALSE, paging = FALSE)))
+  #print(DT::datatable(singleframe, options = list(searching = FALSE, paging = FALSE)))
 })
 
 output$Monday_table = renderDataTable({
   Monday_table <- staff_return()[["Monday_table"]]
-  print(DT::datatable(Monday_table, options = list(searching = FALSE, paging = FALSE)))
+  #print(DT::datatable(Monday_table, options = list(searching = FALSE, paging = FALSE)))
 })
 
 output$Tuesday_table = renderDataTable({
   Tuesday_table <- staff_return()[["Tuesday_table"]]
-  print(DT::datatable(Tuesday_table, options = list(searching = FALSE, paging = FALSE)))
+  #print(DT::datatable(Tuesday_table, options = list(searching = FALSE, paging = FALSE)))
 })
 
 output$Wednesday_table = renderDataTable({
   Wednesday_table <- staff_return()[["Wednesday_table"]]
-  print(DT::datatable(Wednesday_table, options = list(searching = FALSE, paging = FALSE)))
+  #print(DT::datatable(Wednesday_table, options = list(searching = FALSE, paging = FALSE)))
 })
 
 output$Thursday_table = renderDataTable({
   Thursday_table <- staff_return()[["Thursday_table"]]
-  print(DT::datatable(Thursday_table, options = list(searching = FALSE, paging = FALSE)))
+  #print(DT::datatable(Thursday_table, options = list(searching = FALSE, paging = FALSE)))
 })
 
 output$Friday_table = renderDataTable({
   Friday_table <- staff_return()[["Friday_table"]]
-  print(DT::datatable(Friday_table, options = list(searching = FALSE, paging = FALSE)))
+  #print(DT::datatable(Friday_table, options = list(searching = FALSE, paging = FALSE)))
 })
 
 output$Saturday_table = renderDataTable({
   Saturday_table <- staff_return()[["Saturday_table"]]
-  print(DT::datatable(Saturday_table, options = list(searching = FALSE, paging = FALSE)))
+  #print(DT::datatable(Saturday_table, options = list(searching = FALSE, paging = FALSE)))
 })
 
 output$Sunday_table = renderDataTable({
   Sunday_table <- staff_return()[["Sunday_table"]]
-  print(DT::datatable(Sunday_table, options = list(searching = FALSE, paging = FALSE)))
+  #print(DT::datatable(Sunday_table, options = list(searching = FALSE, paging = FALSE)))
 })
 
 output$Monday = renderPlot({

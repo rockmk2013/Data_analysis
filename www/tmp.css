@@ -1,3 +1,6 @@
 h2{
 font-family: "Microsoft JhengHei";
 }
+.table tfoot{
+ display:none;
+}

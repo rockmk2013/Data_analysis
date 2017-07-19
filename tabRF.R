@@ -1,5 +1,4 @@
 library(shiny)
-library(DT)
 library(ggplot2)
 library(dplyr)
 library(randomForest)
@@ -51,7 +50,9 @@ rf_imp_partial <- function(rf,train){
     coord_flip()+
     ylab("%MSE Value")+
     xlab(" ")+
-    theme( plot.title = element_text(hjust = 0.5,size=12))
+    theme( plot.title = element_text(hjust = 0.5,size=12),
+           axis.text.x = element_text(size=16),
+           axis.text.y = element_text(size=12))
   return(list("rf_imp" = rf_imp,"partial" = partial))
 }
 

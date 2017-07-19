@@ -1,15 +1,12 @@
 library(shiny)
-library(DT)
 library(ggplot2)
 library(dplyr)
 library(psych)
 library(nFactors)
 library(readr)
 library(gWidgets)
-library(Benchmarking)
 library(scales)
 library(xtable)
-library(reshape2)
 library(corrplot)
 
 fa_return <- reactive({
@@ -143,7 +140,7 @@ output$fa_plot2 = renderPlot({
 
 output$fa_store = renderDataTable({
   fa_store <- fa_return()[["fa_store"]]
-  print(DT::datatable(fa_store, options = list(searching = FALSE, paging = FALSE)))
+  #print(DT::datatable(fa_store, options = list(searching = FALSE, paging = FALSE)))
 })
 
 output$fa_store_plot = renderPlot({

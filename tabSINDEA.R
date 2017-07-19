@@ -1,5 +1,4 @@
 library(shiny)
-library(DT)
 library(ggplot2)
 library(dplyr)
 
@@ -78,12 +77,12 @@ single_findmean <- function(single){
 
 output$single_mean = renderDataTable({
   mean_table <- single_dea_return()[["all"]][["mean_table"]]
-  print(DT::datatable(mean_table, options = list(searching = FALSE, paging = FALSE)))
+  #print(DT::datatable(mean_table, options = list(searching = FALSE, paging = FALSE)))
 })
 
 output$single_cv = renderDataTable({
   store_full <- single_dea_return()[["all"]][["store_full"]]
-  print(DT::datatable(store_full, options = list(searching = FALSE, paging = FALSE)))
+  #print(DT::datatable(store_full, options = list(searching = FALSE, paging = FALSE)))
 })
 
 output$single_cv_plot = renderPlot({
@@ -98,12 +97,12 @@ output$single_frontier_plot = renderPlot({
 
 output$single_weekday_mean = renderDataTable({
   store_full <- single_dea_return()[["weekday"]][["mean_table"]]
-  print(DT::datatable(store_full, options = list(searching = FALSE, paging = FALSE)))
+  #print(DT::datatable(store_full, options = list(searching = FALSE, paging = FALSE)))
 })
 
 output$single_weekday_cv = renderDataTable({
   store_full <- single_dea_return()[["weekday"]][["store_full"]]
-  print(DT::datatable(store_full, options = list(searching = FALSE, paging = FALSE)))
+  #print(DT::datatable(store_full, options = list(searching = FALSE, paging = FALSE)))
 })
 
 output$single_weekday_cv_plot = renderPlot({
@@ -118,12 +117,12 @@ output$single_weekday_frontier_plot = renderPlot({
 
 output$single_weekend_mean = renderDataTable({
   store_full <- single_dea_return()[["weekend"]][["mean_table"]]
-  print(DT::datatable(store_full, options = list(searching = FALSE, paging = FALSE)))
+  #print(DT::datatable(store_full, options = list(searching = FALSE, paging = FALSE)))
 })
 
 output$single_weekend_cv = renderDataTable({
   store_full <- single_dea_return()[["weekend"]][["store_full"]]
-  print(DT::datatable(store_full, options = list(searching = FALSE, paging = FALSE)))
+  #print(DT::datatable(store_full, options = list(searching = FALSE, paging = FALSE)))
 })
 
 output$single_weekend_cv_plot = renderPlot({
