@@ -6,14 +6,14 @@ single_dea_return <- reactive({
   single <- read.table(single$datapath,sep = ",",header = TRUE,encoding = "utf-8")
   singledata <- single_findmean(single)
   single_all_mean <- singledata$singlestore_dea
-  single_weekday_mean <- singledata$singlestore_weekday
-  single_weekend_mean <- singledata$singlestore_weekend
+  single_workingday_mean <- singledata$singlestore_workingday
+  single_holiday_mean <- singledata$singlestore_holiday
   all <- single_dea_calculate(single, single_all_mean)
-  weekday <- single_dea_calculate(single, single_weekday_mean)
-  weekend <- single_dea_calculate(single, single_weekend_mean)
+  workingday <- single_dea_calculate(single, single_workingday_mean)
+  holiday <- single_dea_calculate(single, single_holiday_mean)
   list("all" = all,
-       "weekday" = weekday,
-       "weekend" = weekend)
+       "workingday" = workingday,
+       "holiday" = holiday)
 })
 
 single_dea_calculate <- function(single,single_mean){
@@ -60,15 +60,17 @@ single_findmean <- function(single){
   time <- as.character(unique(single$Time))
   singlestore_dea[,1] <- time
   colnames(singlestore_dea) <- c("time", "mean_instore", "mean_sales", "mean_transaction")
-  single_weekday <- single[single$Weekday !='Sunday' & single$Weekday !='Saturday',]
-  single_weekend <- single[single$Weekday =='Sunday' | single$Weekday =='Saturday',]
-  singlestore_weekday <- storesummary(single_weekday, group, selection)
-  singlestore_weekend <- storesummary(single_weekend, group, selection)
-  singlestore_weekday[,1] <- time
-  singlestore_weekend[,1] <- time
-  colnames(singlestore_weekday) <- c("time", "mean_instore", "mean_sales", "mean_transaction")
-  colnames(singlestore_weekend) <- c("time", "mean_instore", "mean_sales", "mean_transaction")
-  output <- list(singlestore_dea = singlestore_dea, singlestore_weekday = singlestore_weekday, singlestore_weekend = singlestore_weekend)
+  
+  single_workingday <- filter(single,special_vacation !=1,consistent_vacation !=1,normal_vacation !=1)
+  single_holiday <- filter(single,special_vacation ==1 | consistent_vacation ==1 | normal_vacation==1) 
+  
+  singlestore_workingday <- storesummary(single_workingday, group, selection)
+  singlestore_holiday <- storesummary(single_holiday, group, selection)
+  singlestore_workingday[,1] <- time
+  singlestore_holiday[,1] <- time
+  colnames(singlestore_workingday) <- c("time", "mean_instore", "mean_sales", "mean_transaction")
+  colnames(singlestore_holiday) <- c("time", "mean_instore", "mean_sales", "mean_transaction")
+  output <- list(singlestore_dea = singlestore_dea, singlestore_workingday = singlestore_workingday, singlestore_holiday = singlestore_holiday)
   return(output)
 }
 
@@ -109,34 +111,34 @@ output$single_frontier_plot = renderPlot({
   # print(frontier)
 })
 
-output$single_weekday_mean = renderDataTable({
-  store_full <- single_dea_return()[["weekday"]][["mean_table"]]
+output$single_workingday_mean = renderDataTable({
+  store_full <- single_dea_return()[["workingday"]][["mean_table"]]
   #print(DT::datatable(store_full, options = list(searching = FALSE, paging = FALSE)))
 })
 
-output$single_weekday_cv = renderDataTable({
-  store_full <- single_dea_return()[["weekday"]][["store_full"]]
+output$single_workingday_cv = renderDataTable({
+  store_full <- single_dea_return()[["workingday"]][["store_full"]]
   #print(DT::datatable(store_full, options = list(searching = FALSE, paging = FALSE)))
 })
 
-output$single_weekday_cv_plot = renderPlot({
-  single_cv_plot <- single_dea_return()[["weekday"]][["cv_plot"]]
+output$single_workingday_cv_plot = renderPlot({
+  single_cv_plot <- single_dea_return()[["workingday"]][["cv_plot"]]
   print(single_cv_plot)
 })
 
-output$single_weekday_frontier_plot = renderPlot({
+output$single_workingday_frontier_plot = renderPlot({
   single <- input$single
   single <- read.table(single$datapath,sep = ",",header = TRUE,encoding = "utf-8")
   singledata <- single_findmean(single)
-  single_weekday_mean <- singledata$singlestore_weekday
+  single_workingday_mean <- singledata$singlestore_workingday
   
-  mean_table <-  single_weekday_mean
+  mean_table <-  single_workingday_mean
   mean_table[,-1] <- round(mean_table[,-1], digits = 2)
   rownames(mean_table) <- NULL
   time <- unique(single$Time)
-  single_weekday_mean <- data.frame(apply( single_weekday_mean[,-1],2,function(x) x / mean(x)))
-  X=matrix(single_weekday_mean$mean_instore,ncol=1)
-  Y=cbind(single_weekday_mean$mean_sales, single_weekday_mean$mean_transaction)
+  single_workingday_mean <- data.frame(apply( single_workingday_mean[,-1],2,function(x) x / mean(x)))
+  X=matrix(single_workingday_mean$mean_instore,ncol=1)
+  Y=cbind(single_workingday_mean$mean_sales, single_workingday_mean$mean_transaction)
   
   
   # frontier
@@ -148,36 +150,34 @@ output$single_weekday_frontier_plot = renderPlot({
   # print(frontier)
 })
 
-output$single_weekend_mean = renderDataTable({
-  store_full <- single_dea_return()[["weekend"]][["mean_table"]]
+output$single_holiday_mean = renderDataTable({
+  store_full <- single_dea_return()[["holiday"]][["mean_table"]]
   #print(DT::datatable(store_full, options = list(searching = FALSE, paging = FALSE)))
 })
 
-output$single_weekend_cv = renderDataTable({
-  store_full <- single_dea_return()[["weekend"]][["store_full"]]
+output$single_holiday_cv = renderDataTable({
+  store_full <- single_dea_return()[["holiday"]][["store_full"]]
   #print(DT::datatable(store_full, options = list(searching = FALSE, paging = FALSE)))
 })
 
-output$single_weekend_cv_plot = renderPlot({
-  single_cv_plot <- single_dea_return()[["weekend"]][["cv_plot"]]
+output$single_holiday_cv_plot = renderPlot({
+  single_cv_plot <- single_dea_return()[["holiday"]][["cv_plot"]]
   print(single_cv_plot)
 })
 
-output$single_weekend_frontier_plot = renderPlot({
+output$single_holiday_frontier_plot = renderPlot({
   single <- input$single
   single <- read.table(single$datapath,sep = ",",header = TRUE,encoding = "utf-8")
   singledata <- single_findmean(single)
-  single_all_mean <- singledata$singlestore_dea
-  single_weekday_mean <- singledata$singlestore_weekday
-  single_weekend_mean <- singledata$singlestore_weekend
+  single_holiday_mean <- singledata$singlestore_holiday
   
-  mean_table <-   single_weekend_mean
+  mean_table <-   single_holiday_mean
   mean_table[,-1] <- round(mean_table[,-1], digits = 2)
   rownames(mean_table) <- NULL
   time <- unique(single$Time)
-  single_weekend_mean <- data.frame(apply( single_weekend_mean[,-1],2,function(x) x / mean(x)))
-  X=matrix( single_weekend_mean$mean_instore,ncol=1)
-  Y=cbind( single_weekend_mean$mean_sales, single_weekend_mean$mean_transaction)
+  single_holiday_mean <- data.frame(apply( single_holiday_mean[,-1],2,function(x) x / mean(x)))
+  X=matrix( single_holiday_mean$mean_instore,ncol=1)
+  Y=cbind( single_holiday_mean$mean_sales,  single_holiday_mean$mean_transaction)
   
   
   # frontier

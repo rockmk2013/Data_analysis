@@ -9,22 +9,22 @@ findfqamean <- function(multi){
   selection <- c("StoreNumber","InstoreTraffic","Revenue")
   storename <- as.character(unique(multi$StoreNumber))
   
-  # Seperate multistore data into weekdays and weekends
-  multi_weekday <- multi[multi$Weekday !='Sunday' & multi$Weekday !='Saturday',]
-  multi_weekend <- multi[multi$Weekday =='Sunday' | multi$Weekday =='Saturday',]
+  # Seperate multistore data into workingdays and holidays
+  multi_workingday <- filter(multi,special_vacation !=1,consistent_vacation !=1,normal_vacation !=1)
+  multi_holiday <- filter(multi,special_vacation ==1 | consistent_vacation ==1 | normal_vacation==1) 
   
   # Get mean of columns by weekdays and weekends grouped by store number
-  multistore_weekday <- fqastoresummary(multi_weekday, group, selection)
-  multistore_weekend <- fqastoresummary(multi_weekend, group, selection)
-  multistore_week <- cbind(storename,multistore_weekday[,-1], multistore_weekend[,-1])
-  colnames(multistore_week) <- c("storename","mean_instore_week", "mean_sales_week", "mean_instore_weekend", "mean_sales_weekend")
+  multistore_workingday <- fqastoresummary(multi_workingday, group, selection)
+  multistore_holiday <- fqastoresummary(multi_holiday, group, selection)
+  multistore_weekdays <- cbind(storename,multistore_workingday[,-1], multistore_holiday[,-1])
+  colnames(multistore_weekdays) <- c("storename","mean_instore_workingday", "mean_sales_workingday", "mean_instore_holiday", "mean_sales_holiday")
   
-  output <- list (multistore_week = multistore_week)
+  output <- list (multistore_weekdays = multistore_weekdays)
   return(output)
 }
 
 
-output$multi_week_plot = renderPlot({
+output$multi_workingday_plot = renderPlot({
   multi <- input$multi
   multi <- read.table(multi$datapath,sep = ",",header = TRUE,encoding = "utf-8")
   multidata <- findfqamean(multi)
@@ -34,21 +34,21 @@ output$multi_week_plot = renderPlot({
   slicedata = list()
   storename = multi[,1]
   for( i in 1:length(storename)){
-    slicedata[[i]] = multi %>% filter(multistore_week.storename==storename[i])
+    slicedata[[i]] = multi %>% filter(multistore_weekdays.storename==storename[i])
   }
   #set limit
-  x_min <- min(multi$multistore_week.mean_instore_week)
-  x_max <- max(multi$multistore_week.mean_instore_weekend)
+  x_min <- min(multi$multistore_weekdays.mean_instore_workingday)
+  x_max <- max(multi$multistore_weekdays.mean_instore_holiday)
   
-  y_min <- min(multi$multistore_week.mean_sales_week)
-  y_max <- max(multi$multistore_week.mean_sales_weekend)
+  y_min <- min(multi$multistore_weekdays.mean_sales_workingday)
+  y_max <- max(multi$multistore_weekdays.mean_sales_holiday)
   
   #
   colortype = c("red","#80FFFF","brown","green","blue","black","purple","pink","yellow","#4F9D9D","#FF8040")
   for(i in 1:length(storename)){
     if(i==1){
-      plot(slicedata[[i]]$multistore_week.mean_instore_week,
-           slicedata[[i]]$multistore_week.mean_sales_week,
+      plot(slicedata[[i]]$multistore_weekdays.mean_instore_workingday,
+           slicedata[[i]]$multistore_weekdays.mean_sales_workingday,
            pch=16,
            col=colortype[i],
            xlim=c(0,x_max),
@@ -66,8 +66,8 @@ output$multi_week_plot = renderPlot({
       )
       
     }else{
-      points(slicedata[[i]]$multistore_week.mean_instore_week,
-             slicedata[[i]]$multistore_week.mean_sales_week,
+      points(slicedata[[i]]$multistore_weekdays.mean_instore_workingday,
+             slicedata[[i]]$multistore_weekdays.mean_sales_workingday,
              pch=16,
              col=colortype[i],
              cex=3,
@@ -78,33 +78,32 @@ output$multi_week_plot = renderPlot({
   
 })
 
-output$multi_weekend_plot = renderPlot({
+output$multi_holiday_plot = renderPlot({
   multi <- input$multi
   multi <- read.table(multi$datapath,sep = ",",header = TRUE,encoding = "utf-8")
   multidata <- findfqamean(multi)
   #set data
   multi = data.frame(multidata)
   
-  #set graph data
   slicedata = list()
   storename = multi[,1]
   for( i in 1:length(storename)){
-    slicedata[[i]] = multi %>% filter(multistore_week.storename==storename[i])
+    slicedata[[i]] = multi %>% filter(multistore_weekdays.storename==storename[i])
   }
   #set limit
-  x_min <- min(multi$multistore_week.mean_instore_week)
-  x_max <- max(multi$multistore_week.mean_instore_weekend)
+  x_min <- min(multi$multistore_weekdays.mean_instore_workingday)
+  x_max <- max(multi$multistore_weekdays.mean_instore_holiday)
   
-  y_min <- min(multi$multistore_week.mean_sales_week)
-  y_max <- max(multi$multistore_week.mean_sales_weekend)
+  y_min <- min(multi$multistore_weekdays.mean_sales_workingday)
+  y_max <- max(multi$multistore_weekdays.mean_sales_holiday)
   
   #
   colortype = c("red","#80FFFF","brown","green","blue","black","purple","pink","yellow","#4F9D9D","#FF8040")
   for(i in 1:length(storename)){
     if(i==1){
       
-      plot(slicedata[[i]]$multistore_week.mean_instore_weekend,
-           slicedata[[i]]$multistore_week.mean_sales_weekend,
+      plot(slicedata[[i]]$multistore_weekdays.mean_instore_holiday,
+           slicedata[[i]]$multistore_weekdays.mean_sales_holiday,
            pch=17,
            col=colortype[i],
            xlim=c(0,x_max),
@@ -122,8 +121,8 @@ output$multi_weekend_plot = renderPlot({
       )
       
     }else{
-      points(slicedata[[i]]$multistore_week.mean_instore_weekend,
-             slicedata[[i]]$multistore_week.mean_sales_weekend,
+      points(slicedata[[i]]$multistore_weekdays.mean_instore_holiday,
+             slicedata[[i]]$multistore_weekdays.mean_sales_holiday,
              pch=17,
              col=colortype[i],
              cex=3,
@@ -140,21 +139,24 @@ output$multi_slope_plot = renderPlot({
   multidata <- findfqamean(multi)
   #set data
   multi = data.frame(multidata)
-  
   #set graph data
-  slicedata = list()
+  #slicedata = list()
   storename = multi[,1]
-  for( i in 1:length(storename)){
-    slicedata[[i]] = multi %>% filter(multistore_week.storename==storename[i])
-  }
-  #set limit
-  x_min <- min(multi$multistore_week.mean_instore_week)
-  x_max <- max(multi$multistore_week.mean_instore_weekend)
   
-  y_min <- min(multi$multistore_week.mean_sales_week)
-  y_max <- max(multi$multistore_week.mean_sales_weekend)
+  instore_dif = multi$multistore_weekdays.mean_instore_holiday-multi$multistore_weekdays.mean_instore_workingday
+  sales_dif = multi$multistore_weekdays.mean_sales_holiday-multi$multistore_weekdays.mean_sales_workingday
+  slope = (sales_dif/instore_dif)
+  slope = slope/mean(slope)
+  slopedata = data.frame(storename,instore_dif,sales_dif,slope)
   
-  #
-  colortype = c("red","#80FFFF","brown","green","blue","black","purple","pink","yellow","#4F9D9D","#FF8040")
-  
+  ggplot(slopedata,aes(x=as.factor(storename),y=slope))+geom_bar(stat="identity",fill="#00BFC4")+
+    ylab("成長率")+
+    xlab("店名")+
+    theme_bw()+
+    theme(panel.border = element_blank(),
+          plot.title = element_text(hjust = 0.5),
+          axis.text.x = element_text(size=16),
+          axis.text.y = element_text(size=16),
+          axis.title=element_text(size=16)
+    )
 })

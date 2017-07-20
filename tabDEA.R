@@ -7,14 +7,14 @@ dea_return <- reactive({
   multi <- read.table(multi$datapath,sep = ",",header = TRUE,encoding = "utf-8")
   multidata <- findmean(multi)
   multi_all_mean <- multidata$multistore_dea
-  multi_weekday_mean <- multidata$multistore_weekday
-  multi_weekend_mean <- multidata$multistore_weekend
+  multi_workingday_mean <- multidata$multistore_workingday
+  multi_holiday_mean <- multidata$multistore_holiday
   all <- dea_calculate(multi, multi_all_mean)
-  weekday <- dea_calculate(multi, multi_weekday_mean)
-  weekend <- dea_calculate(multi, multi_weekend_mean)
+  workingday <- dea_calculate(multi, multi_workingday_mean)
+  holiday <- dea_calculate(multi, multi_holiday_mean)
   list("all" = all,
-       "weekday" = weekday,
-       "weekend" = weekend)
+       "workingday" = workingday,
+       "holiday" = holiday)
   
 })
 
@@ -68,15 +68,17 @@ findmean <- function(multi){
   storename <- as.character(unique(multi$StoreNumber))
   multistore_dea[,1] <- storename
   colnames(multistore_dea) <- c("store_name", "mean_instore", "mean_sales", "mean_transaction")
-  multi_weekday <- multi[multi$Weekday !='Sunday' & multi$Weekday !='Saturday',]
-  multi_weekend <- multi[multi$Weekday =='Sunday' | multi$Weekday =='Saturday',]
-  multistore_weekday <- storesummary(multi_weekday, group, selection)
-  multistore_weekend <- storesummary(multi_weekend, group, selection)
-  multistore_weekday[,1] <- storename
-  multistore_weekend[,1] <- storename
-  colnames(multistore_weekday) <- c("store_name", "mean_instore", "mean_sales", "mean_transaction")
-  colnames(multistore_weekend) <- c("store_name", "mean_instore", "mean_sales", "mean_transaction")
-  output <- list(multistore_dea = multistore_dea, multistore_weekday = multistore_weekday, multistore_weekend = multistore_weekend)
+  
+  multi_workingday <- filter(multi,special_vacation !=1,consistent_vacation !=1,normal_vacation !=1)
+  multi_holiday <- filter(multi,special_vacation ==1 | consistent_vacation ==1 | normal_vacation==1) 
+
+  multistore_workingday <- storesummary(multi_workingday, group, selection)
+  multistore_holiday <- storesummary(multi_holiday, group, selection)
+  multistore_workingday[,1] <- storename
+  multistore_holiday[,1] <- storename
+  colnames(multistore_workingday) <- c("store_name", "mean_instore", "mean_sales", "mean_transaction")
+  colnames(multistore_holiday) <- c("store_name", "mean_instore", "mean_sales", "mean_transaction")
+  output <- list(multistore_dea = multistore_dea, multistore_workingday = multistore_workingday, multistore_holiday = multistore_holiday)
   return(output)
 }
 
@@ -120,35 +122,35 @@ output$multi_frontier_plot = renderPlot({
   # print(frontier)
 })
 
-output$multi_weekday_mean = renderDataTable({
-  mean_table <- dea_return()[["weekday"]][["mean_table"]]
+output$multi_workingday_mean = renderDataTable({
+  mean_table <- dea_return()[["workingday"]][["mean_table"]]
   #print(DT::datatable(mean_table, options = list(searching = FALSE, paging = FALSE)))
 })
 
-output$multi_weekday_cv = renderDataTable({
-  store_full <- dea_return()[["weekday"]][["store_full"]]
+output$multi_workingday_cv = renderDataTable({
+  store_full <- dea_return()[["workingday"]][["store_full"]]
   #print(DT::datatable(store_full, options = list(searching = FALSE, paging = FALSE)))
 })
 
-output$multi_weekday_cv_plot = renderPlot({
-  multi_cv_plot <- dea_return()[["weekday"]][["cv_plot"]]
+output$multi_workingday_cv_plot = renderPlot({
+  multi_cv_plot <- dea_return()[["workingday"]][["cv_plot"]]
   print(multi_cv_plot)
 })
 
-output$multi_weekday_frontier_plot = renderPlot({
+output$multi_workingday_frontier_plot = renderPlot({
   multi <- input$multi
   multi <- read.table(multi$datapath,sep = ",",header = TRUE,encoding = "utf-8")
   multidata <- findmean(multi)
-  multi_weekday_mean <- multidata$multistore_weekday
+  multi_workingday_mean <- multidata$multistore_workingday
   
   # mean_table
-  mean_table <- multi_weekday_mean
+  mean_table <- multi_workingday_mean
   mean_table[,-1] <- round(mean_table[,-1], digits = 2)
   rownames(mean_table) <- NULL
   store_name <- unique(multi[,1])
-  multi_weekday_mean <- data.frame(apply(multi_weekday_mean[,-1],2,function(x) x / mean(x)))
-  X=matrix(multi_weekday_mean$mean_instore,ncol=1)
-  Y=cbind(multi_weekday_mean$mean_sales,multi_weekday_mean$mean_transaction)
+  multi_workingday_mean <- data.frame(apply(multi_workingday_mean[,-1],2,function(x) x / mean(x)))
+  X=matrix(multi_workingday_mean$mean_instore,ncol=1)
+  Y=cbind(multi_workingday_mean$mean_sales,multi_workingday_mean$mean_transaction)
   # frontier
   dea.plot.frontier(X,Y,txt=store_name,col="red", RTS="vrs",lwd=3)
   dea.plot.frontier(X,Y,txt=store_name,col="red", RTS="crs",lwd=3,add=TRUE,lty="dashed")
@@ -158,35 +160,35 @@ output$multi_weekday_frontier_plot = renderPlot({
 #   print(frontier)
 })
 
-output$multi_weekend_mean = renderDataTable({
-  mean_table <- dea_return()[["weekend"]][["mean_table"]]
+output$multi_holiday_mean = renderDataTable({
+  mean_table <- dea_return()[["holiday"]][["mean_table"]]
   #print(DT::datatable(mean_table, options = list(searching = FALSE, paging = FALSE)))
 })
 
-output$multi_weekend_cv = renderDataTable({
-  store_full <- dea_return()[["weekend"]][["store_full"]]
+output$multi_holiday_cv = renderDataTable({
+  store_full <- dea_return()[["holiday"]][["store_full"]]
   #print(DT::datatable(store_full, options = list(searching = FALSE, paging = FALSE)))
 })
 
-output$multi_weekend_cv_plot = renderPlot({
-  multi_cv_plot <- dea_return()[["weekend"]][["cv_plot"]]
+output$multi_holiday_cv_plot = renderPlot({
+  multi_cv_plot <- dea_return()[["holiday"]][["cv_plot"]]
   print(multi_cv_plot)
 })
 
-output$multi_weekend_frontier_plot = renderPlot({
+output$multi_holiday_frontier_plot = renderPlot({
   multi <- input$multi
   multi <- read.table(multi$datapath,sep = ",",header = TRUE,encoding = "utf-8")
   multidata <- findmean(multi)
-  multi_weekend_mean <- multidata$multistore_weekend
+  multi_holiday_mean <- multidata$multistore_holiday
   
   # mean_table
-  mean_table <- multi_weekend_mean
+  mean_table <- multi_holiday_mean
   mean_table[,-1] <- round(mean_table[,-1], digits = 2)
   rownames(mean_table) <- NULL
   store_name <- unique(multi[,1])
-  multi_weekend_mean <- data.frame(apply(multi_weekend_mean[,-1],2,function(x) x / mean(x)))
-  X=matrix(multi_weekend_mean$mean_instore,ncol=1)
-  Y=cbind(multi_weekend_mean$mean_sales,multi_weekend_mean$mean_transaction)
+  multi_holiday_mean <- data.frame(apply(multi_holiday_mean[,-1],2,function(x) x / mean(x)))
+  X=matrix(multi_holiday_mean$mean_instore,ncol=1)
+  Y=cbind(multi_holiday_mean$mean_sales,multi_holiday_mean$mean_transaction)
   # frontier
   dea.plot.frontier(X,Y,txt=store_name,col="red", RTS="vrs",lwd=3)
   dea.plot.frontier(X,Y,txt=store_name,col="red", RTS="crs",lwd=3,add=TRUE,lty="dashed")
