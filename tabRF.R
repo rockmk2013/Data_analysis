@@ -1,9 +1,4 @@
 library(shiny)
-library(ggplot2)
-library(dplyr)
-library(randomForest)
-library(rpart.plot)
-
 rf_return <- reactive({
   # Read data
   single <- input$single

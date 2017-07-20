@@ -1,6 +1,4 @@
 library(shiny)
-library(ggplot2)
-library(dplyr)
 
 single_dea_return <- reactive({
   # Read data
@@ -28,9 +26,9 @@ single_dea_calculate <- function(single,single_mean){
   X=matrix(single_mean$mean_instore,ncol=1)
   Y=cbind(single_mean$mean_sales,single_mean$mean_transaction)
   # frontier
-  frontier <- dea.plot.frontier(X,Y,txt=time,col="red", RTS="vrs",lwd=3)
-  frontier <- frontier + dea.plot.frontier(X,Y,txt=time,col="red", RTS="crs",lwd=3,add=TRUE,lty="dashed")
-  p <- recordPlot()
+  # frontier <- dea.plot.frontier(X,Y,txt=time,col="red", RTS="vrs",lwd=3)
+  # frontier <- frontier + dea.plot.frontier(X,Y,txt=time,col="red", RTS="crs",lwd=3,add=TRUE,lty="dashed")
+  # p <- recordPlot()
   # store_full
   crs <- 1 / eff(dea(X,Y,RTS = "crs",ORIENTATION = "out"))
   vrs <- 1 / eff(dea(X,Y,RTS = "vrs",ORIENTATION = "out"))
@@ -46,7 +44,7 @@ single_dea_calculate <- function(single,single_mean){
     theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(size=16),axis.text.y = element_text(size=16)) + scale_fill_discrete(name = "方法")
   
   return(  list("mean_table" = mean_table, 
-                "frontier" = p,
+                # "frontier" = p,
                 "store_full" = store_full,
                 "cv_plot" = cv_plot))
 }
@@ -91,8 +89,24 @@ output$single_cv_plot = renderPlot({
 })
 
 output$single_frontier_plot = renderPlot({
-  frontier <- single_dea_return()[["all"]][["frontier"]]
-  print(frontier)
+  single <- input$single
+  single <- read.table(single$datapath,sep = ",",header = TRUE,encoding = "utf-8")
+  singledata <- single_findmean(single)
+  single_all_mean <- singledata$singlestore_dea
+  
+  mean_table <-  single_all_mean
+  mean_table[,-1] <- round(mean_table[,-1], digits = 2)
+  rownames(mean_table) <- NULL
+  time <- unique(single$Time)
+  single_all_mean <- data.frame(apply( single_all_mean[,-1],2,function(x) x / mean(x)))
+  X=matrix( single_all_mean$mean_instore,ncol=1)
+  Y=cbind( single_all_mean$mean_sales, single_all_mean$mean_transaction)
+  # frontier
+  dea.plot.frontier(X,Y,txt=time,col="red", RTS="vrs",lwd=3)
+  dea.plot.frontier(X,Y,txt=time,col="red", RTS="crs",lwd=3,add=TRUE,lty="dashed")
+  # 
+  # frontier <- single_dea_return()[["all"]][["frontier"]]
+  # print(frontier)
 })
 
 output$single_weekday_mean = renderDataTable({
@@ -111,8 +125,27 @@ output$single_weekday_cv_plot = renderPlot({
 })
 
 output$single_weekday_frontier_plot = renderPlot({
-  frontier <- single_dea_return()[["weekday"]][["frontier"]]
-  print(frontier)
+  single <- input$single
+  single <- read.table(single$datapath,sep = ",",header = TRUE,encoding = "utf-8")
+  singledata <- single_findmean(single)
+  single_weekday_mean <- singledata$singlestore_weekday
+  
+  mean_table <-  single_weekday_mean
+  mean_table[,-1] <- round(mean_table[,-1], digits = 2)
+  rownames(mean_table) <- NULL
+  time <- unique(single$Time)
+  single_weekday_mean <- data.frame(apply( single_weekday_mean[,-1],2,function(x) x / mean(x)))
+  X=matrix(single_weekday_mean$mean_instore,ncol=1)
+  Y=cbind(single_weekday_mean$mean_sales, single_weekday_mean$mean_transaction)
+  
+  
+  # frontier
+  dea.plot.frontier(X,Y,txt=time,col="red", RTS="vrs",lwd=3)
+  dea.plot.frontier(X,Y,txt=time,col="red", RTS="crs",lwd=3,add=TRUE,lty="dashed")
+  
+  # 
+  # frontier <- single_dea_return()[["weekday"]][["frontier"]]
+  # print(frontier)
 })
 
 output$single_weekend_mean = renderDataTable({
@@ -131,6 +164,27 @@ output$single_weekend_cv_plot = renderPlot({
 })
 
 output$single_weekend_frontier_plot = renderPlot({
-  frontier <- single_dea_return()[["weekend"]][["frontier"]]
-  print(frontier)
+  single <- input$single
+  single <- read.table(single$datapath,sep = ",",header = TRUE,encoding = "utf-8")
+  singledata <- single_findmean(single)
+  single_all_mean <- singledata$singlestore_dea
+  single_weekday_mean <- singledata$singlestore_weekday
+  single_weekend_mean <- singledata$singlestore_weekend
+  
+  mean_table <-   single_weekend_mean
+  mean_table[,-1] <- round(mean_table[,-1], digits = 2)
+  rownames(mean_table) <- NULL
+  time <- unique(single$Time)
+  single_weekend_mean <- data.frame(apply( single_weekend_mean[,-1],2,function(x) x / mean(x)))
+  X=matrix( single_weekend_mean$mean_instore,ncol=1)
+  Y=cbind( single_weekend_mean$mean_sales, single_weekend_mean$mean_transaction)
+  
+  
+  # frontier
+  dea.plot.frontier(X,Y,txt=time,col="red", RTS="vrs",lwd=3)
+  dea.plot.frontier(X,Y,txt=time,col="red", RTS="crs",lwd=3,add=TRUE,lty="dashed")
+  
+  # 
+  # frontier <- single_dea_return()[["weekend"]][["frontier"]]
+  # print(frontier)
 })

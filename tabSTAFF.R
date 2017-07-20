@@ -1,6 +1,4 @@
 library(shiny)
-library(ggplot2)
-library(dplyr)
 
 staff_return <- reactive({
   # Read data

@@ -1,8 +1,3 @@
-library(readr)
-library(dplyr)
-library(ggplot2)
-library(gridExtra)
-
 output$revenue_hourly = renderPlot({
   single <- input$single
   single <- read.table(single$datapath,sep = ",",header = TRUE,encoding = "utf-8")

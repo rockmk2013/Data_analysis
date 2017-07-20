@@ -1,14 +1,4 @@
 library(shiny)
-library(ggplot2)
-library(dplyr)
-library(psych)
-library(nFactors)
-library(readr)
-library(gWidgets)
-library(scales)
-library(xtable)
-library(corrplot)
-
 fa_return <- reactive({
   # Read data
   multi <- input$multi

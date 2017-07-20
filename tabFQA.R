@@ -1,5 +1,4 @@
 library(shiny)
-library(dplyr)
 
 fqastoresummary <- function(df, group, selection){
   return(df %>% group_by_(group) %>% dplyr::select(one_of(selection)) %>% summarise_all(funs(mean)))
@@ -132,5 +131,30 @@ output$multi_weekend_plot = renderPlot({
       
     }
   }
+  
+})
+
+output$multi_slope_plot = renderPlot({
+  multi <- input$multi
+  multi <- read.table(multi$datapath,sep = ",",header = TRUE,encoding = "utf-8")
+  multidata <- findfqamean(multi)
+  #set data
+  multi = data.frame(multidata)
+  
+  #set graph data
+  slicedata = list()
+  storename = multi[,1]
+  for( i in 1:length(storename)){
+    slicedata[[i]] = multi %>% filter(multistore_week.storename==storename[i])
+  }
+  #set limit
+  x_min <- min(multi$multistore_week.mean_instore_week)
+  x_max <- max(multi$multistore_week.mean_instore_weekend)
+  
+  y_min <- min(multi$multistore_week.mean_sales_week)
+  y_max <- max(multi$multistore_week.mean_sales_weekend)
+  
+  #
+  colortype = c("red","#80FFFF","brown","green","blue","black","purple","pink","yellow","#4F9D9D","#FF8040")
   
 })

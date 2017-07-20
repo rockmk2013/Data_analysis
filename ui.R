@@ -1,12 +1,14 @@
 library(shinythemes)
 shinyUI(fluidPage(theme = shinytheme("journal"),
                   tags$head(
-                    tags$link(rel = "stylesheet", type = "text/css", href = "tmp.css")
+                    tags$link(rel = "stylesheet", type = "text/css", href = "tmp.css"),
+                    tags$link(rel="shortcut icon", href="icon.png")
                   ),
                   
-                  titlePanel(div(img(height = 50, width = 120, align = "center", src = "skyrec.png"),"Data Analyst")),
-                  
-                  
+                  titlePanel(
+                    div(img(height = 50, width = 120, align = "center", src = "skyrec.png"),"Data Analyst"),
+                    windowTitle = "你有Free Style嗎?"
+                    ),
                   navlistPanel(
                     "Methods",
                     tabPanel("Flowchart",
@@ -155,6 +157,10 @@ shinyUI(fluidPage(theme = shinytheme("journal"),
                              HTML('<br>'),
                              HTML('<center><h2>各指標之四象限分析(周末)</h2></center>'),
                              plotOutput("multi_weekend_plot"),
+                             HTML('<br>'),
+                             HTML('<br>'),
+                             HTML('<center><h2>周間周末分析</h2></center>'),
+                             plotOutput("multi_slope_plot"),
                              HTML('<br>'),
                              HTML('<br>')
                     ),
