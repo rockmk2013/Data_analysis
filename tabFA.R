@@ -1,23 +1,34 @@
 library(shiny)
+library(ggplot2)
+library(dplyr)
+library(psych)
+library(nFactors)
+library(readr)
+library(gWidgets)
+library(scales)
+library(xtable)
+library(corrplot)
+
 fa_return <- reactive({
   # Read data
   multi <- input$multi
   multi <- read.table(multi$datapath,sep = ",",header = TRUE,encoding = "utf-8")
   multi_mean <- multistoremean(multi)
+  storename <- multi_mean[,1]
   multi_mean <- multi_mean[,-1]
+  multi_mean <- multi_mean[,colSums(multi_mean) > 0]
+  
+  multi_mean_table <- data.frame(storename,round(multi_mean,2))
   #corplot
   M <- cor(multi_mean)
-  varname <- c("Window","Conversion","ATV","UPT","APV","Efficient","Duration","Loyal")
-  colnames(M) <- varname
-  rownames(M) <- varname
   corrplot(M,method="color",type="lower")
   corplot <- recordPlot()
   #multi_scree_plot
   fa.parallel(multi_mean)
   multi_scree_plot <- recordPlot()
   #fa_plot
-  fa <- fa(multi_mean,nfactors = 2, residuals = TRUE, scores = "tenBerge", fm = "mle")
-  metrics <- c("Window_conversion","Conversion","ATV","UPT","APV","Efficient_visit","Duration","Loyal")
+  fa <- fa(multi_mean,nfactors = 2, residuals = TRUE, scores = "tenBerge", fm = ifelse(det(cor(multi_mean)) < exp(-18),"pa","mle"))
+  metrics <- colnames(multi_mean)
   loading <- data.frame(cbind(metrics,xtable(unclass(fa$loadings))))
   rownames(loading) <- NULL
   colnames(loading) <- c("Metrics","Factor 1","Factor 2")
@@ -28,10 +39,7 @@ fa_return <- reactive({
                          high = "blue", mid = "white", low = "red", 
                          midpoint=0, guide="colourbar") +
     ylab("Loading Strength") + 
-    theme_bw(base_size=14)+
-    theme(axis.title=element_text(size=16),
-          axis.text.x = element_text(size=16),
-          axis.text.y = element_text(size=16))
+    theme_bw(base_size=14)
   #fa_plot2
   fa.diagram(fa,Phi=NULL,fe.results=NULL,sort=TRUE,labels=NULL,cut=.5,
              simple=TRUE, errors=FALSE,g=FALSE,digits=1,e.size=.05,rsize=.15,side=2,cex=NULL,marg=c(.5,.5,1,.5),adj=1)
@@ -43,7 +51,8 @@ fa_return <- reactive({
   
   #fa_store_plot
   fa_store_plot <- store_to_plot(fa_store)
-  list("corplot" = corplot,
+  list("multi_mean" = multi_mean_table,
+       "corplot" = corplot,
        "multi_scree_plot" = multi_scree_plot,
        "fa_plot" = fa_plot,
        "fa_plot2" = fa_plot2,
@@ -93,10 +102,6 @@ store_to_plot <- function(fa_store){
   fa_store_plot <- fa_store_plot + scale_y_continuous(limits = c(y_med - y_width,y_med + y_width))
   fa_store_plot <- fa_store_plot + geom_vline(xintercept = median(fa_store$F1)) + geom_hline(yintercept = median(fa_store$F2))
   fa_store_plot <- fa_store_plot + theme(legend.position="none")
-  fa_store_plot <- fa_store_plot + 
-  theme(axis.title=element_text(size=16),
-        axis.text.x = element_text(size=16),
-        axis.text.y = element_text(size=16))
   return(fa_store_plot)
 }
 
@@ -114,6 +119,11 @@ multistoremean <- function(multi){
   multi_mean[,1] <- storename
   return(multi_mean)
 }
+
+
+output$fa_multi_mean = renderDataTable({
+  fa_multi_mean <- fa_return()[["multi_mean"]]
+  })
 
 output$multi_cor_plot = renderPlot({
   multi_cor_plot <- fa_return()[["corplot"]]
