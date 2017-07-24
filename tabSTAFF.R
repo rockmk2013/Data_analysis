@@ -91,6 +91,7 @@ find_daychange<-function(num,summary){
 }
 
 plotfun<-function(num,summary,dat){
+  weekday = c('Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday')
   df<-summary[[num]]
   df2<-dat[[num]]
   findmax = data.frame (df2 %>% group_by(Time) %>% summarise(mean(Labor)))
@@ -103,15 +104,16 @@ plotfun<-function(num,summary,dat){
     scale_colour_manual(name="Legend", values = c("原始排班" = "red", "建議排班" = "orange", "排班上界" = "black"))+
     scale_linetype_manual(name="Legend", values = c("原始排班" = "solid", "建議排班" = "solid", "排班上界" = "dashed"))+
     xlab("時間")+
-    ggtitle(paste0("員工平均對應顧客數為",round(sum(df$sum_STAR)/sum(df$k),1)))+
+    ggtitle(paste0(weekday[num],"(員工平均對應顧客數為",round(sum(df$sum_STAR)/sum(df$k),1),")"))+
     theme_bw()+
     theme(
       panel.border = element_blank(),
       axis.text.y = element_blank(),
       axis.title.y = element_blank(),
-      plot.title = element_text(hjust = 0.5,size=16),
+      plot.title = element_text(hjust = 0.5,size=20),
       axis.text.x = element_text(size=16),
-      axis.title.x = element_text(size=14)
+      axis.title.x = element_text(size=18),
+      legend.text=element_text(size=16)
     )
   return(g)
 }  
