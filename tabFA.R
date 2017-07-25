@@ -1,6 +1,5 @@
 library(shiny)
 
-
 fa_return <- reactive({
   # Read data
   multi <- input$multi
@@ -43,7 +42,7 @@ fa_return <- reactive({
   
   #fa_store_plot
   fa_store_plot <- store_to_plot(fa_store)
-  list("multi_mean" = multi_mean_table,
+  list("multi_mean_table" = multi_mean_table,
        "corplot" = corplot,
        "multi_scree_plot" = multi_scree_plot,
        "fa_plot" = fa_plot,
@@ -113,9 +112,6 @@ multistoremean <- function(multi){
 }
 
 
-output$fa_multi_mean = renderDataTable({
-  fa_multi_mean <- fa_return()[["multi_mean"]]
-  })
 
 output$multi_cor_plot = renderPlot({
   multi_cor_plot <- fa_return()[["corplot"]]
@@ -140,6 +136,10 @@ output$fa_plot2 = renderPlot({
 output$fa_store = renderDataTable({
   fa_store <- fa_return()[["fa_store"]]
   #print(DT::datatable(fa_store, options = list(searching = FALSE, paging = FALSE)))
+})
+
+output$fa_multi_mean = renderDataTable({
+  fa_multi_mean <- fa_return()[["multi_mean_table"]]
 })
 
 output$fa_store_plot = renderPlot({
