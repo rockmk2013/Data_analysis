@@ -30,12 +30,8 @@ output$multi_workingday_plot = renderPlot({
   multidata <- findfqamean(multi)
   #set data
   multi = data.frame(multidata)
+  storename = c(1:length(multi[,1]))
   
-  slicedata = list()
-  storename = multi[,1]
-  for( i in 1:length(storename)){
-    slicedata[[i]] = multi %>% filter(multistore_weekdays.storename==storename[i])
-  }
   #set limit
   x_min <- min(multi$multistore_weekdays.mean_instore_workingday)
   x_max <- max(multi$multistore_weekdays.mean_instore_holiday)
@@ -44,38 +40,18 @@ output$multi_workingday_plot = renderPlot({
   y_max <- max(multi$multistore_weekdays.mean_sales_holiday)
   
   #
-  colortype = c("red","#80FFFF","brown","green","blue","black","purple","pink","yellow","#4F9D9D","#FF8040")
-  for(i in 1:length(storename)){
-    if(i==1){
-      plot(slicedata[[i]]$multistore_weekdays.mean_instore_workingday,
-           slicedata[[i]]$multistore_weekdays.mean_sales_workingday,
-           pch=16,
-           col=colortype[i],
-           xlim=c(0,x_max),
-           ylim=c(0,y_max),
-           ann = FALSE,
-           lwd=8,
-           cex=3,
-           las=1)
-      abline(v=x_max/2,h=y_max/2)
-      legend("bottomright",                                # 表示在右上角
-             pch = 16,                 # pch代表點的圖案
-             bty="n",
-             col = colortype,           # col代表顏色
-             legend = storename # 顏色所對應的名稱
-      )
-      
-    }else{
-      points(slicedata[[i]]$multistore_weekdays.mean_instore_workingday,
-             slicedata[[i]]$multistore_weekdays.mean_sales_workingday,
-             pch=16,
-             col=colortype[i],
-             cex=3,
-             lwd=8)
-      
-    }
-  }
+  store_plot <- ggplot(multi,aes(x=multistore_weekdays.mean_instore_workingday, y=multistore_weekdays.mean_sales_workingday)) + 
+    geom_point(aes(size = 1.5),alpha=0.7,colour="#00BFC4") + 
+    geom_label(aes(label=storename,alpha=0.5),hjust=0.5,vjust=1,colour="#00BFC4") + 
+    xlab("Instore") + 
+    ylab("Revenue") +
+    scale_x_continuous(limits = c(x_min,x_max))+
+    scale_y_continuous(limits = c(y_min,y_max))+
+    geom_vline(xintercept = x_max/2) + 
+    geom_hline(yintercept = y_max/2) +
+    theme(panel.background = element_rect(fill = "#F0F0F0"),legend.position="none",axis.title = element_text(size=16),axis.text = element_text(size=16))
   
+  return(store_plot)
 })
 
 output$multi_holiday_plot = renderPlot({
@@ -84,12 +60,8 @@ output$multi_holiday_plot = renderPlot({
   multidata <- findfqamean(multi)
   #set data
   multi = data.frame(multidata)
+  storename = c(1:length(multi[,1]))
   
-  slicedata = list()
-  storename = multi[,1]
-  for( i in 1:length(storename)){
-    slicedata[[i]] = multi %>% filter(multistore_weekdays.storename==storename[i])
-  }
   #set limit
   x_min <- min(multi$multistore_weekdays.mean_instore_workingday)
   x_max <- max(multi$multistore_weekdays.mean_instore_holiday)
@@ -98,39 +70,21 @@ output$multi_holiday_plot = renderPlot({
   y_max <- max(multi$multistore_weekdays.mean_sales_holiday)
   
   #
-  colortype = c("red","#80FFFF","brown","green","blue","black","purple","pink","yellow","#4F9D9D","#FF8040")
-  for(i in 1:length(storename)){
-    if(i==1){
-      
-      plot(slicedata[[i]]$multistore_weekdays.mean_instore_holiday,
-           slicedata[[i]]$multistore_weekdays.mean_sales_holiday,
-           pch=17,
-           col=colortype[i],
-           xlim=c(0,x_max),
-           ylim=c(0,y_max),
-           ann = FALSE,
-           lwd=8,
-           cex=3,
-           las=1)
-      abline(v=x_max/2,h=y_max/2)
-      legend("bottomright",                                # 表示在右上角
-             pch = 17,                 # pch代表點的圖案
-             bty="n",
-             col = colortype,           # col代表顏色
-             legend = storename # 顏色所對應的名稱
-      )
-      
-    }else{
-      points(slicedata[[i]]$multistore_weekdays.mean_instore_holiday,
-             slicedata[[i]]$multistore_weekdays.mean_sales_holiday,
-             pch=17,
-             col=colortype[i],
-             cex=3,
-             lwd=8)
-      
-    }
-  }
   
+  store_plot <- ggplot(multi,aes(x=multistore_weekdays.mean_instore_holiday, y=multistore_weekdays.mean_sales_holiday, colour="#00BFC4")) + 
+    geom_point(aes(size = 1.5),alpha=0.7) + 
+    geom_label(aes(label=storename,alpha=0.5),hjust=0.5,vjust=1) + 
+    xlab("Instore") + 
+    ylab("Revenue") +
+    scale_x_continuous(limits = c(x_min,x_max))+
+    scale_y_continuous(limits = c(y_min,y_max))+
+    geom_vline(xintercept = x_max/2) + 
+    geom_hline(yintercept = y_max/2) +
+    theme(panel.background = element_rect(fill = "#F0F0F0"),legend.position="none",axis.title = element_text(size=16),axis.text = element_text(size=16))
+  
+ # colortype = c("red","#80FFFF","brown","green","blue","black","purple","pink","yellow","#4F9D9D","#FF8040")
+ 
+  return(store_plot)
 })
 
 output$multi_slope_plot = renderPlot({
@@ -150,7 +104,7 @@ output$multi_slope_plot = renderPlot({
   slopedata = data.frame(storename,instore_dif,sales_dif,slope)
   
   ggplot(slopedata,aes(x=as.factor(storename),y=slope))+geom_bar(stat="identity",fill="#00BFC4")+
-    ylab("成長率")+
+    ylab("轉換效率")+
     xlab("店名")+
     theme_bw()+
     theme(panel.border = element_blank(),

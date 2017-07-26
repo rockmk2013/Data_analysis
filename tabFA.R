@@ -88,11 +88,11 @@ store_to_plot <- function(fa_store){
   y_min <- min(fa_store$F2)
   y_max <- max(fa_store$F2)
   y_width <- max(y_max - y_med, y_med - y_min)
-  fa_store_plot <- ggplot(fa_store,aes(x=F1, y=F2, colour=factor(group))) + geom_point(aes(size = 1.5)) + geom_label(aes(label=Storenum),hjust=0.5,vjust=1) + xlab("顧客吸引力") + ylab("顧客掌握力")
+  fa_store_plot <- ggplot(fa_store,aes(x=F1, y=F2, colour=factor(group))) + geom_point(aes(size = 1.5)) + geom_label(aes(label=Storenum),hjust=0.5,vjust=1) + xlab("FA1") + ylab("FA2")
   fa_store_plot <- fa_store_plot + scale_x_continuous(limits = c(x_med - x_width,x_med + x_width))
   fa_store_plot <- fa_store_plot + scale_y_continuous(limits = c(y_med - y_width,y_med + y_width))
   fa_store_plot <- fa_store_plot + geom_vline(xintercept = median(fa_store$F1)) + geom_hline(yintercept = median(fa_store$F2))
-  fa_store_plot <- fa_store_plot + theme(legend.position="none")
+  fa_store_plot <- fa_store_plot + theme(legend.position="none",axis.title = element_text(size=16),axis.text = element_text(size = 16))
   return(fa_store_plot)
 }
 
