@@ -18,7 +18,7 @@ fa_return <- reactive({
   fa.parallel(multi_mean)
   multi_scree_plot <- recordPlot()
   #fa_plot
-  fa <- fa(multi_mean,nfactors = 2, residuals = TRUE, scores = "tenBerge", fm = ifelse(det(cor(multi_mean)) < exp(-18),"pa","mle"))
+  fa <- fa(multi_mean,nfactors = 2, residuals = TRUE, scores = "tenBerge",fm = ifelse(det(cor(multi_mean)) < exp(-18),"minres","mle"))
   metrics <- colnames(multi_mean)
   loading <- data.frame(cbind(metrics,xtable(unclass(fa$loadings))))
   rownames(loading) <- NULL
