@@ -1,5 +1,5 @@
 library(shiny)
-windowsFonts(BL = windowsFont("微軟正黑體"))
+
 fa_return <- reactive({
   # Read data
   multi <- input$multi

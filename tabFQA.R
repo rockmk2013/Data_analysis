@@ -1,5 +1,5 @@
 library(shiny)
-windowsFonts(BL = windowsFont("微軟正黑體"))
+
 
 fqastoresummary <- function(df, group, selection){
   return(df %>% group_by_(group) %>% dplyr::select(one_of(selection)) %>% summarise_all(funs(mean)))

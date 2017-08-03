@@ -1,5 +1,5 @@
 library(shiny)
-windowsFonts(BL = windowsFont("微軟正黑體"))
+
 
 single_dea_return <- reactive({
   # Read data
@@ -46,7 +46,8 @@ single_dea_calculate <- function(single,single_mean){
           axis.text.x = element_text(size=16),
           axis.text.y = element_text(size=16),
           axis.title.x = element_text(size=16,family = "BL"),
-          axis.title.y = element_text(size=16,family = "BL")) + 
+          axis.title.y = element_text(size=16,family = "BL"),
+          legend.title = element_text(family = "BL")) + 
     scale_fill_discrete(name = "方法")
   
   return(  list("mean_table" = mean_table, 

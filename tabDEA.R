@@ -1,6 +1,6 @@
 library(shiny)
 
-windowsFonts(BL = windowsFont("微軟正黑體"))
+
 dea_return <- reactive({
   # Read data
   multi <- input$multi
@@ -47,7 +47,8 @@ dea_calculate <- function(multi,multi_mean){
     theme(plot.title = element_text(hjust = 0.5),
           axis.text.x = element_text(size=16),
           axis.text.y = element_text(size=16),
-          axis.title  = element_text(size=16,family = "BL")
+          axis.title  = element_text(size=16,family = "BL"),
+          legend.title = element_text(family = "BL")
     ) +
     scale_fill_discrete(name = "方法")
   return(  list("mean_table" = mean_table,

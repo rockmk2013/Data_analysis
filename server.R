@@ -14,7 +14,7 @@ library(gridExtra)
 library(randomForest)
 library(rpart.plot)
 library(GPArotation)
-library(extrafont)
+windowsFonts(BL = windowsFont("微軟正黑體"))
 
 shinyServer(function(input, output) {
   #重整路徑

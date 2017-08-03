@@ -1,5 +1,5 @@
 library(shiny)
-windowsFonts(BL = windowsFont("微軟正黑體"))
+
 rf_return <- reactive({
   # Read data
   single <- input$single
@@ -31,14 +31,14 @@ rf_imp_partial <- function(rf,train){
   # partial
   impvar <- rownames(imp)[order(imp[, 1], decreasing=TRUE)]
   par(mfrow=c(2, 2),family = "BL")
-  do.call("partialPlot", list(x = rf, pred.data = train, x.var = impvar[1]))
-  do.call("partialPlot", list(x = rf, pred.data = train, x.var = impvar[2]))
-  do.call("partialPlot", list(x = rf, pred.data = train, x.var = impvar[3]))
-  do.call("partialPlot", list(x = rf, pred.data = train, x.var = impvar[4]))
+  do.call("partialPlot.randomForest", list(x = rf, pred.data = train, x.var = impvar[1]))
+  do.call("partialPlot.randomForest", list(x = rf, pred.data = train, x.var = impvar[2]))
+  do.call("partialPlot.randomForest", list(x = rf, pred.data = train, x.var = impvar[3]))
+  do.call("partialPlot.randomForest", list(x = rf, pred.data = train, x.var = impvar[4]))
   # partialPlot(rf, train,impvar[1])
-  # partialPlot(rf, train,impvar[2], main=paste("Partial Dependence on ", impvar[2]))
-  # partialPlot(rf, train,impvar[3], main=paste("Partial Dependence on ", impvar[3]))
-  # partialPlot(rf, train,impvar[4], main=paste("Partial Dependence on ", impvar[4]))
+  # partialPlot(rf, train,impvar[2], main=paste("Partial Dependence on ", impvar[2]),col="red")
+  # partialPlot(rf, train,impvar[3], main=paste("Partial Dependence on ", impvar[3]),col="red")
+  # partialPlot(rf, train,impvar[4], main=paste("Partial Dependence on ", impvar[4]),col="red")
   partial <- recordPlot()
   # rf_imp
   rf_imp <- ggplot(impor,aes(x=reorder(rownames(impor),X.IncMSE),y=X.IncMSE))+
@@ -137,3 +137,91 @@ output$downloadData_RF_Instore <- downloadHandler(
   }
 )
 
+#------randomforest partial function-------
+partialPlot.default <- function(x, ...)
+  stop("partial dependence plot not implemented for this class of objects.\n")
+
+partialPlot.randomForest <-
+  function (x, pred.data, x.var, which.class, w, plot=TRUE, add=FALSE,
+            n.pt = min(length(unique(pred.data[, xname])), 51), rug = TRUE,
+            xlab=deparse(substitute(x.var)), ylab="",
+            main=paste("Partial Dependence on", deparse(substitute(x.var))),
+            ...)
+  {
+    classRF <- x$type != "regression"
+    if (is.null(x$forest))
+      stop("The randomForest object must contain the forest.\n")
+    x.var <- substitute(x.var)
+    xname <- if (is.character(x.var)) x.var else {
+      if (is.name(x.var)) deparse(x.var) else {
+        eval(x.var)
+      }
+    }
+    xv <- pred.data[, xname]
+    n <- nrow(pred.data)
+    if (missing(w)) w <- rep(1, n)
+    if (classRF) {
+      if (missing(which.class)) {
+        focus <- 1
+      }
+      else {
+        focus <- charmatch(which.class, colnames(x$votes))
+        if (is.na(focus))
+          stop(which.class, "is not one of the class labels.")
+      }
+    }
+    if (is.factor(xv) && !is.ordered(xv)) {
+      x.pt <- levels(xv)
+      y.pt <- numeric(length(x.pt))
+      for (i in seq(along = x.pt)) {
+        x.data <- pred.data
+        x.data[, xname] <- factor(rep(x.pt[i], n), levels = x.pt)
+        if (classRF) {
+          pr <- predict(x, x.data, type = "prob")
+          y.pt[i] <- weighted.mean(log(ifelse(pr[, focus] > 0,
+                                              pr[, focus], .Machine$double.eps)) -
+                                     rowMeans(log(ifelse(pr > 0, pr, .Machine$double.eps))),
+                                   w, na.rm=TRUE)
+        } else y.pt[i] <- weighted.mean(predict(x, x.data), w, na.rm=TRUE)
+        
+      }
+      if (add) {
+        points(1:length(x.pt), y.pt, type="h", lwd=2, ...)
+      } else {
+        if (plot) barplot(y.pt, width=rep(1, length(y.pt)), col="#00BFC4",
+                          xlab = xlab, ylab = ylab, main=main,
+                          names.arg=x.pt, ...)
+      }
+    } else {
+      if (is.ordered(xv)) xv <- as.numeric(xv)
+      x.pt <- seq(min(xv), max(xv), length = n.pt)
+      y.pt <- numeric(length(x.pt))
+      for (i in seq(along = x.pt)) {
+        x.data <- pred.data
+        x.data[, xname] <- rep(x.pt[i], n)
+        if (classRF) {
+          pr <- predict(x, x.data, type = "prob")
+          y.pt[i] <- weighted.mean(log(ifelse(pr[, focus] == 0,
+                                              .Machine$double.eps, pr[, focus]))
+                                   - rowMeans(log(ifelse(pr == 0, .Machine$double.eps, pr))),
+                                   w, na.rm=TRUE)
+        } else {
+          y.pt[i] <- weighted.mean(predict(x, x.data), w, na.rm=TRUE)
+        }
+      }
+      if (add) {
+        lines(x.pt, y.pt, ...)
+      } else {
+        if (plot) plot(x.pt, y.pt, type = "l", xlab=xlab, ylab=ylab,
+                       main = main, ...)
+      }
+      if (rug && plot) {
+        if (n.pt > 10) {
+          rug(quantile(xv, seq(0.1, 0.9, by = 0.1)), side = 1)
+        } else {
+          rug(unique(xv, side = 1))
+        }
+      }
+    }
+    invisible(list(x = x.pt, y = y.pt))
+  }
