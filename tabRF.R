@@ -1,4 +1,5 @@
 library(shiny)
+windowsFonts(BL = windowsFont("微軟正黑體"))
 rf_return <- reactive({
   # Read data
   single <- input$single
@@ -29,12 +30,12 @@ rf_imp_partial <- function(rf,train){
   impor <- data.frame(round(imp,2))
   # partial
   impvar <- rownames(imp)[order(imp[, 1], decreasing=TRUE)]
-  par(mfrow=c(2, 2))
+  par(mfrow=c(2, 2),family = "BL")
   do.call("partialPlot", list(x = rf, pred.data = train, x.var = impvar[1]))
   do.call("partialPlot", list(x = rf, pred.data = train, x.var = impvar[2]))
   do.call("partialPlot", list(x = rf, pred.data = train, x.var = impvar[3]))
   do.call("partialPlot", list(x = rf, pred.data = train, x.var = impvar[4]))
-  #partialPlot(rf, train,impvar[1])
+  # partialPlot(rf, train,impvar[1])
   # partialPlot(rf, train,impvar[2], main=paste("Partial Dependence on ", impvar[2]))
   # partialPlot(rf, train,impvar[3], main=paste("Partial Dependence on ", impvar[3]))
   # partialPlot(rf, train,impvar[4], main=paste("Partial Dependence on ", impvar[4]))
@@ -48,7 +49,7 @@ rf_imp_partial <- function(rf,train){
     theme( plot.title = element_text(hjust = 0.5,size=12),
            axis.text.x = element_text(size=16),
            axis.text.y = element_text(size=16),
-           axis.title=element_text(size=16))
+           axis.title  = element_text(size=16,family="BL"))
   return(list("rf_imp" = rf_imp,"partial" = partial))
 }
 
@@ -90,5 +91,49 @@ output$instore_partial = renderPlot({
   print(instore_partial)
 })
 
-
+output$downloadData_RF_Revenue <- downloadHandler(
+  filename = 'RF_graph_revenue.zip',
+  content = function(fname) {
+    
+    tmpdir <- tempdir()
+    setwd(tempdir())
+    print (tempdir())
+    fs <- c("revenue_rf_imp.png","revenue_partial.png")
+    
+    revenue_rf_imp <- rf_return()[["revenue_rf_imp"]]
+    ggsave("revenue_rf_imp.png",width = 7.2,height = 2.8)
+    
+    png("revenue_partial.png",width = 700,height=300)
+    print(rf_return()[["revenue_partial"]])
+    dev.off()
+    
+    print (fs)
+    zip(zipfile=fname, files=fs, flags = "-r9X", extras = "",
+        zip = Sys.getenv("R_ZIPCMD", "zip"))
+    
+  }
+)
+output$downloadData_RF_Instore <- downloadHandler(
+  filename = 'RF_graph_instore.zip',
+  content = function(fname) {
+    
+    tmpdir <- tempdir()
+    setwd(tempdir())
+    print (tempdir())
+    fs <- c("instore_rf_imp.png","instore_partial.png")
+    
+    instore_rf_imp <- rf_return()[["instore_rf_imp"]]
+    ggsave("instore_rf_imp.png",width = 7.2,height = 2.8)
+    
+    png("instore_partial.png",width = 700,height=300)
+    print(rf_return()[["instore_partial"]])
+    dev.off()
+    
+    
+    print (fs)
+    zip(zipfile=fname, files=fs, flags = "-r9X", extras = "",
+        zip = Sys.getenv("R_ZIPCMD", "zip"))
+    
+  }
+)
 

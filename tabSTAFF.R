@@ -1,4 +1,5 @@
 library(shiny)
+windowsFonts(BL = windowsFont("微軟正黑體"))
 
 staff_return <- reactive({
   # Read data
@@ -110,10 +111,10 @@ plotfun<-function(num,summary,dat){
       panel.border = element_blank(),
       axis.text.y = element_blank(),
       axis.title.y = element_blank(),
-      plot.title = element_text(hjust = 0.5,size=20),
+      plot.title = element_text(hjust = 0.5,size=20,family = "BL"),
       axis.text.x = element_text(size=16),
-      axis.title.x = element_text(size=18),
-      legend.text=element_text(size=16)
+      axis.title.x = element_text(size=18,family = "BL"),
+      legend.text=element_text(size=16,family = "BL")
     )
   return(g)
 }  

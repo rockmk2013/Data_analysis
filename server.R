@@ -14,8 +14,11 @@ library(gridExtra)
 library(randomForest)
 library(rpart.plot)
 library(GPArotation)
+library(extrafont)
 
 shinyServer(function(input, output) {
+  #重整路徑
+  setwd("C:/Users/user/Documents/GitHub/Data_analysis")
   source('tabDEA.R', local=TRUE, encoding = "utf-8")
   source('tabFA.R', local=TRUE, encoding = "utf-8")
   source('tabRF.R', local=TRUE, encoding = "utf-8")

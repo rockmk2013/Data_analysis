@@ -1,5 +1,5 @@
 library(shiny)
-
+windowsFonts(BL = windowsFont("微軟正黑體"))
 fa_return <- reactive({
   # Read data
   multi <- input$multi
@@ -92,7 +92,7 @@ store_to_plot <- function(fa_store){
   fa_store_plot <- fa_store_plot + scale_x_continuous(limits = c(x_med - x_width,x_med + x_width))
   fa_store_plot <- fa_store_plot + scale_y_continuous(limits = c(y_med - y_width,y_med + y_width))
   fa_store_plot <- fa_store_plot + geom_vline(xintercept = median(fa_store$F1)) + geom_hline(yintercept = median(fa_store$F2))
-  fa_store_plot <- fa_store_plot + theme(legend.position="none",axis.title = element_text(size=16),axis.text = element_text(size = 16))
+  fa_store_plot <- fa_store_plot + theme(legend.position="none",axis.title = element_text(size=16,family = "BL"),axis.text = element_text(size = 16))
   return(fa_store_plot)
 }
 
@@ -146,3 +146,60 @@ output$fa_store_plot = renderPlot({
   fa_store_plot <- fa_return()[["fa_store_plot"]]
   print(fa_store_plot)
 })
+
+output$downloadData_FA <- downloadHandler(
+  filename = 'FA_graph.zip',
+  content = function(fname) {
+    
+    tmpdir <- tempdir()
+    setwd(tempdir())
+    print (tempdir())
+    fs <- c("corplot.png","fa_plot.png","fa_plot2.png","fa_store_plot.png")
+    
+    multi <- input$multi
+    multi <- read.table(multi$datapath,sep = ",",header = TRUE,encoding = "utf-8")
+    multi_mean <- multistoremean(multi)
+    storename <- multi_mean[,1]
+    multi_mean <- multi_mean[,-1]
+    multi_mean <- multi_mean[,colSums(multi_mean) > 0]
+    
+    M <- cor(multi_mean)
+    png("corplot.png",width = 500,height=500)
+    corrplot(M,method="color",type="lower")
+    dev.off()
+    
+    fa <- fa(multi_mean,nfactors = 2, residuals = TRUE, scores = "tenBerge",fm = ifelse(det(cor(multi_mean)) < exp(-18),"minres","mle"))
+    metrics <- colnames(multi_mean)
+    loading <- data.frame(cbind(metrics,xtable(unclass(fa$loadings))))
+    rownames(loading) <- NULL
+    colnames(loading) <- c("Metrics","Factor 1","Factor 2")
+    loading.m <- melt(loading, id="Metrics", measure=c("Factor 1","Factor 2"))
+    fa_plot <- ggplot(loading.m, aes(Metrics, abs(value), fill=value)) +
+      facet_wrap(~ variable) + geom_bar(stat="identity") + coord_flip() + 
+      scale_fill_gradient2(name = "Loading", 
+                           high = "blue", mid = "white", low = "red", 
+                           midpoint=0, guide="colourbar") +
+      ylab("Loading Strength") + 
+      theme(text=element_text(family="BL"))+
+      theme_bw(base_size=14)
+    ggsave("fa_plot.png",width = 12,height = 3)
+    
+    png("fa_plot2.png",width = 500,height=500)
+    fa.diagram(fa,Phi=NULL,fe.results=NULL,sort=TRUE,labels=NULL,cut=.5,
+               simple=TRUE, errors=FALSE,g=FALSE,digits=1,e.size=.05,rsize=.15,side=2,cex=NULL,marg=c(.5,.5,1,.5),adj=1)
+    dev.off()
+    
+    fa_store <- cbind.data.frame(unique(multi[,1]),fa$scores)
+    rownames(fa_store) <- NULL
+    colnames(fa_store) <- c("Store Number","Factor 1","Factor 2")
+    #fa_store_plot
+    fa_store_plot <- store_to_plot(fa_store)
+    ggsave("fa_store_plot.png",width = 12,height = 5)
+    
+    
+    print (fs)
+    zip(zipfile=fname, files=fs, flags = "-r9X", extras = "",
+        zip = Sys.getenv("R_ZIPCMD", "zip"))
+    
+  }
+)

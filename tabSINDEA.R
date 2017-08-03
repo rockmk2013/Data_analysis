@@ -1,4 +1,5 @@
 library(shiny)
+windowsFonts(BL = windowsFont("微軟正黑體"))
 
 single_dea_return <- reactive({
   # Read data
@@ -44,8 +45,8 @@ single_dea_calculate <- function(single,single_mean){
     theme(plot.title = element_text(hjust = 0.5),
           axis.text.x = element_text(size=16),
           axis.text.y = element_text(size=16),
-          axis.title.x = element_text(size=16),
-          axis.title.y = element_text(size=16)) + 
+          axis.title.x = element_text(size=16,family = "BL"),
+          axis.title.y = element_text(size=16,family = "BL")) + 
     scale_fill_discrete(name = "方法")
   
   return(  list("mean_table" = mean_table, 
@@ -109,8 +110,8 @@ output$single_frontier_plot = renderPlot({
   X=matrix( single_all_mean$mean_instore,ncol=1)
   Y=cbind( single_all_mean$mean_sales, single_all_mean$mean_transaction)
   # frontier
-  dea.plot.frontier(X,Y,txt=time,col="red", RTS="vrs",lwd=3)
-  dea.plot.frontier(X,Y,txt=time,col="red", RTS="crs",lwd=3,add=TRUE,lty="dashed")
+  dea.plot.frontier(X,Y,txt=time,col="red", RTS="vrs",lwd=3,family = "BL")
+  dea.plot.frontier(X,Y,txt=time,col="red", RTS="crs",lwd=3,add=TRUE,lty="dashed",family = "BL")
   # 
   # frontier <- single_dea_return()[["all"]][["frontier"]]
   # print(frontier)
@@ -147,8 +148,8 @@ output$single_workingday_frontier_plot = renderPlot({
   
   
   # frontier
-  dea.plot.frontier(X,Y,txt=time,col="red", RTS="vrs",lwd=3)
-  dea.plot.frontier(X,Y,txt=time,col="red", RTS="crs",lwd=3,add=TRUE,lty="dashed")
+  dea.plot.frontier(X,Y,txt=time,col="red", RTS="vrs",lwd=3,family = "BL")
+  dea.plot.frontier(X,Y,txt=time,col="red", RTS="crs",lwd=3,add=TRUE,lty="dashed",family = "BL")
   
   # 
   # frontier <- single_dea_return()[["weekday"]][["frontier"]]
@@ -186,10 +187,120 @@ output$single_holiday_frontier_plot = renderPlot({
   
   
   # frontier
-  dea.plot.frontier(X,Y,txt=time,col="red", RTS="vrs",lwd=3)
-  dea.plot.frontier(X,Y,txt=time,col="red", RTS="crs",lwd=3,add=TRUE,lty="dashed")
+  dea.plot.frontier(X,Y,txt=time,col="red", RTS="vrs",lwd=3,family = "BL")
+  dea.plot.frontier(X,Y,txt=time,col="red", RTS="crs",lwd=3,add=TRUE,lty="dashed",family = "BL")
   
   # 
   # frontier <- single_dea_return()[["weekend"]][["frontier"]]
   # print(frontier)
 })
+
+output$downloadData_sinall <- downloadHandler(
+  filename = 'DEA_graph_sinall.zip',
+  content = function(fname) {
+    
+    tmpdir <- tempdir()
+    setwd(tempdir())
+    print (tempdir())
+    fs <- c("cv_plot.png","frontier.png")
+    
+    single_cv_plot <- single_dea_return()[["all"]][["cv_plot"]]
+    ggsave("cv_plot.png",width = 10,height = 5)
+    single <- input$single
+    single <- read.table(single$datapath,sep = ",",header = TRUE,encoding = "utf-8")
+    singledata <- single_findmean(single)
+    single_all_mean <- singledata$singlestore_dea
+    
+    mean_table <-  single_all_mean
+    mean_table[,-1] <- round(mean_table[,-1], digits = 2)
+    rownames(mean_table) <- NULL
+    time <- unique(single$Time)
+    single_all_mean <- data.frame(apply( single_all_mean[,-1],2,function(x) x / mean(x)))
+    X=matrix( single_all_mean$mean_instore,ncol=1)
+    Y=cbind( single_all_mean$mean_sales, single_all_mean$mean_transaction)
+    # frontier
+    png("frontier.png",width = 700,height=300)
+    dea.plot.frontier(X,Y,txt=time,col="red", RTS="vrs",lwd=3,family = "BL")
+    dea.plot.frontier(X,Y,txt=time,col="red", RTS="crs",lwd=3,add=TRUE,lty="dashed",family = "BL")
+    dev.off()
+    
+    print (fs)
+    zip(zipfile=fname, files=fs, flags = "-r9X", extras = "",
+        zip = Sys.getenv("R_ZIPCMD", "zip"))
+    
+  }
+)
+output$downloadData_sinworking <- downloadHandler(
+  filename = 'DEA_graph_sinworking.zip',
+  content = function(fname) {
+    
+    tmpdir <- tempdir()
+    setwd(tempdir())
+    print (tempdir())
+    fs <- c("cv_plot.png","frontier.png")
+    
+    single_cv_plot <- single_dea_return()[["workingday"]][["cv_plot"]]
+    ggsave("cv_plot.png",width = 10,height = 5)
+    single <- input$single
+    single <- read.table(single$datapath,sep = ",",header = TRUE,encoding = "utf-8")
+    singledata <- single_findmean(single)
+    single_workingday_mean <- singledata$singlestore_workingday
+    
+    mean_table <-  single_workingday_mean
+    mean_table[,-1] <- round(mean_table[,-1], digits = 2)
+    rownames(mean_table) <- NULL
+    time <- unique(single$Time)
+    single_workingday_mean <- data.frame(apply( single_workingday_mean[,-1],2,function(x) x / mean(x)))
+    X=matrix(single_workingday_mean$mean_instore,ncol=1)
+    Y=cbind(single_workingday_mean$mean_sales, single_workingday_mean$mean_transaction)
+    
+    
+    # frontier
+    png("frontier.png",width = 700,height=300)
+    dea.plot.frontier(X,Y,txt=time,col="red", RTS="vrs",lwd=3,family = "BL")
+    dea.plot.frontier(X,Y,txt=time,col="red", RTS="crs",lwd=3,add=TRUE,lty="dashed",family = "BL")
+    dev.off()
+    
+    print (fs)
+    zip(zipfile=fname, files=fs, flags = "-r9X", extras = "",
+        zip = Sys.getenv("R_ZIPCMD", "zip"))
+    
+  }
+)
+output$downloadData_sinweekend <- downloadHandler(
+  filename = 'DEA_graph_sinweekend.zip',
+  content = function(fname) {
+    
+    tmpdir <- tempdir()
+    setwd(tempdir())
+    print (tempdir())
+    fs <- c("cv_plot.png","frontier.png")
+    
+    single_cv_plot <- single_dea_return()[["holiday"]][["cv_plot"]]
+    ggsave("cv_plot.png",width = 10,height = 5)
+    
+    single <- input$single
+    single <- read.table(single$datapath,sep = ",",header = TRUE,encoding = "utf-8")
+    singledata <- single_findmean(single)
+    single_holiday_mean <- singledata$singlestore_holiday
+    
+    mean_table <-   single_holiday_mean
+    mean_table[,-1] <- round(mean_table[,-1], digits = 2)
+    rownames(mean_table) <- NULL
+    time <- unique(single$Time)
+    single_holiday_mean <- data.frame(apply(single_holiday_mean[,-1],2,function(x) x / mean(x)))
+    X=matrix(single_holiday_mean$mean_instore,ncol=1)
+    Y=cbind(single_holiday_mean$mean_sales,single_holiday_mean$mean_transaction)
+    
+    # frontier
+    png("frontier.png",width = 700,height=300)
+    dea.plot.frontier(X,Y,txt=time,col="red", RTS="vrs",lwd=3,family = "BL")
+    dea.plot.frontier(X,Y,txt=time,col="red", RTS="crs",lwd=3,add=TRUE,lty="dashed",family = "BL")
+    dev.off()
+    
+    print (fs)
+    zip(zipfile=fname, files=fs, flags = "-r9X", extras = "",
+        zip = Sys.getenv("R_ZIPCMD", "zip"))
+    
+  }
+)
