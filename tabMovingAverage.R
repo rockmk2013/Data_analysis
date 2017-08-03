@@ -6,7 +6,7 @@ output$revenue_hourly = renderPlot({
     geom_point(pch=21,fill="#7B7B7B") +
     geom_smooth(colour="darkgoldenrod1", size=1.5, method="loess", 
                 span=0.3, se=FALSE)+
-    scale_x_continuous(breaks = seq(0,round(max(single$InstoreTraffic))*10^(nchar(as.character(max(single$InstoreTraffic)))-1),10^(nchar(as.character(max(single$InstoreTraffic)))-1)))+
+    scale_x_continuous(breaks = seq(0,round(max(single$InstoreTraffic))*10^(nchar(as.character(max(single$InstoreTraffic)))-1),10^(nchar(as.character(max(single$InstoreTraffic)))-1))/2)+
     theme_bw()+
     theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(size=10),axis.text.y = element_text(size=14),
             axis.title=element_text(size=16))
@@ -20,7 +20,7 @@ output$transaction_hourly = renderPlot({
     geom_point(pch=21,fill="#7B7B7B") +
     geom_smooth(colour="darkgoldenrod1", size=1.5, method="loess", 
                 span=0.3, se=FALSE)+
-    scale_x_continuous(breaks = seq(0,round(max(single$InstoreTraffic))*10^(nchar(as.character(max(single$InstoreTraffic)))-1),10^(nchar(as.character(max(single$InstoreTraffic)))-1)))+
+    scale_x_continuous(breaks = seq(0,round(max(single$InstoreTraffic))*10^(nchar(as.character(max(single$InstoreTraffic)))-1),10^(nchar(as.character(max(single$InstoreTraffic)))-1))/2)+
     theme_bw()+
     theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(size=10),axis.text.y = element_text(size=14),
           axis.title = element_text(size=16))
@@ -35,9 +35,9 @@ output$revenue_daily = renderPlot({
     geom_point(pch=21,fill="#7B7B7B") +
     geom_smooth(colour="darkgoldenrod1", size=1.5, method="loess", 
                 span=0.3, se=FALSE)+
-    scale_x_continuous(breaks = seq(0,round(max(daily$InstoreTraffic))*10^(nchar(as.character(max(daily$InstoreTraffic)))-1),10^(nchar(as.character(max(daily$InstoreTraffic)))-1)/2))+
+    scale_x_continuous(breaks = seq(0,round(max(daily$InstoreTraffic))*10^(nchar(as.character(max(daily$InstoreTraffic)))-1),10^(nchar(as.character(max(daily$InstoreTraffic)))-1)/5))+
     theme_bw()+
-    theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(size=10),axis.text.y = element_text(size=14)
+    theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(size=8),axis.text.y = element_text(size=14)
   ,axis.title=element_text(size=16))
   })
 
@@ -49,9 +49,9 @@ output$transaction_daily = renderPlot({
     geom_point(pch=21,fill="#7B7B7B") +
     geom_smooth(colour="darkgoldenrod1", size=1.5, method="loess", 
                 span=0.3, se=FALSE)+
-    scale_x_continuous(breaks = seq(0,round(max(daily$InstoreTraffic))*10^(nchar(as.character(max(daily$InstoreTraffic)))-1),10^(nchar(as.character(max(daily$InstoreTraffic)))-1)/2))+
+    scale_x_continuous(breaks = seq(0,round(max(daily$InstoreTraffic))*10^(nchar(as.character(max(daily$InstoreTraffic)))-1),10^(nchar(as.character(max(daily$InstoreTraffic)))-1)/5))+
     theme_bw()+
-    theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(size=10),axis.text.y = element_text(size=14)
+    theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(size=8),axis.text.y = element_text(size=14)
           ,axis.title=element_text(size=16))
 })
 
@@ -119,7 +119,7 @@ output$downloadData_TAH <- downloadHandler(
       geom_point(pch=21,fill="#7B7B7B") +
       geom_smooth(colour="darkgoldenrod1", size=1.5, method="loess", 
                   span=0.3, se=FALSE)+
-      scale_x_continuous(breaks = seq(0,round(max(single$InstoreTraffic))*10^(nchar(as.character(max(single$InstoreTraffic)))-1),10^(nchar(as.character(max(single$InstoreTraffic)))-1)))+
+      scale_x_continuous(breaks = seq(0,round(max(single$InstoreTraffic))*10^(nchar(as.character(max(single$InstoreTraffic)))-1),10^(nchar(as.character(max(single$InstoreTraffic)))-1))/2)+
       theme_bw()+
       theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(size=10),axis.text.y = element_text(size=14),
             axis.title=element_text(size=16))
@@ -129,7 +129,7 @@ output$downloadData_TAH <- downloadHandler(
       geom_point(pch=21,fill="#7B7B7B") +
       geom_smooth(colour="darkgoldenrod1", size=1.5, method="loess", 
                   span=0.3, se=FALSE)+
-      scale_x_continuous(breaks = seq(0,round(max(single$InstoreTraffic))*10^(nchar(as.character(max(single$InstoreTraffic)))-1),10^(nchar(as.character(max(single$InstoreTraffic)))-1)))+
+      scale_x_continuous(breaks = seq(0,round(max(single$InstoreTraffic))*10^(nchar(as.character(max(single$InstoreTraffic)))-1),10^(nchar(as.character(max(single$InstoreTraffic)))-1))/2)+
       theme_bw()+
       theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(size=10),axis.text.y = element_text(size=14),
             axis.title = element_text(size=16))
@@ -157,9 +157,9 @@ output$downloadData_TAD <- downloadHandler(
       geom_point(pch=21,fill="#7B7B7B") +
       geom_smooth(colour="darkgoldenrod1", size=1.5, method="loess", 
                   span=0.3, se=FALSE)+
-      scale_x_continuous(breaks = seq(0,round(max(daily$InstoreTraffic))*10^(nchar(as.character(max(daily$InstoreTraffic)))-1),10^(nchar(as.character(max(daily$InstoreTraffic)))-1)/2))+
+      scale_x_continuous(breaks = seq(0,round(max(daily$InstoreTraffic))*10^(nchar(as.character(max(daily$InstoreTraffic)))-1),10^(nchar(as.character(max(daily$InstoreTraffic)))-1)/5))+
       theme_bw()+
-      theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(size=10),axis.text.y = element_text(size=14)
+      theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(size=8),axis.text.y = element_text(size=14)
             ,axis.title=element_text(size=16))
     ggsave("TAD_revenue.png")
     
@@ -167,9 +167,9 @@ output$downloadData_TAD <- downloadHandler(
       geom_point(pch=21,fill="#7B7B7B") +
       geom_smooth(colour="darkgoldenrod1", size=1.5, method="loess", 
                   span=0.3, se=FALSE)+
-      scale_x_continuous(breaks = seq(0,round(max(daily$InstoreTraffic))*10^(nchar(as.character(max(daily$InstoreTraffic)))-1),10^(nchar(as.character(max(daily$InstoreTraffic)))-1)/2))+
+      scale_x_continuous(breaks = seq(0,round(max(daily$InstoreTraffic))*10^(nchar(as.character(max(daily$InstoreTraffic)))-1),10^(nchar(as.character(max(daily$InstoreTraffic)))-1)/5))+
       theme_bw()+
-      theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(size=10),axis.text.y = element_text(size=14)
+      theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(size=8),axis.text.y = element_text(size=14)
             ,axis.title=element_text(size=16))
     ggsave("TAD_transaction.png")
     
