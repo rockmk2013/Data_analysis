@@ -3,11 +3,14 @@ library(shiny)
 rf_return <- reactive({
   # Read data
   single <- input$single
-  single <- read.table(single$datapath,sep = ",",header = TRUE,encoding = "utf-8")
+  single <- read.table(single$datapath,sep = ",",check.names = FALSE,header = TRUE,encoding = "utf-8")
+  #刪去商品櫃資料
+  single = single [,1:23]
+  
   # Process the data (factor -> numeric ... etc)
   new_single <- singleprocess(single)
   # Select variables
-  rev_vars <- c("Weekday", "Time", "InstoreTraffic","WindowsConversion","Weather","Revenue","Temperature","NormalVacation","SpecialVacation","ConsistentVacation","MonthofYear","WeekofMonth")
+  rev_vars <- c("Weekday", "Time", "InstoreTraffic","TrafficConversion","Weather","Revenue","Temperature","NormalVacation","SpecialVacation","ConsistentVacation","MonthofYear","WeekofMonth")
   revenue_train <- new_single[,rev_vars]
   instore_vars <- c("Weekday", "Time", "InstoreTraffic","Weather","Temperature","NormalVacation","SpecialVacation","ConsistentVacation","MonthofYear","WeekofMonth")
   instore_train <- new_single[,instore_vars]
@@ -57,17 +60,17 @@ rf_imp_partial <- function(rf,train){
 singleprocess <- function(single){
   single$Time<-as.factor(single$Time)
   single$WeekNumber<-as.factor(single$WeekNumber)
-  single$normal_vacation<-as.factor(single$normal_vacation)
-  single$special_vacation<-as.factor(single$special_vacation)
-  single$consistent_vacation<-as.factor(single$consistent_vacation)
+  single$NormalVacation <-as.factor(single$NormalVacation)
+  single$SpecialVacation <-as.factor(single$SpecialVacation)
+  single$ConsistentVacation <-as.factor(single$ConsistentVacation)
   single$Temperature<-as.numeric(as.character(single$Temperature))
   single$Temperature[is.na(single$Temperature)]<-mean(single$Temperature,na.rm = TRUE)
   timevariables<-as.POSIXlt(single$Date)
   single$MonthofYear<-as.factor(timevariables$mon+1)
   single$WeekofMonth<-as.factor(ceiling(timevariables$mday/7))
-  names(single)[names(single) == 'normal_vacation'] <- 'NormalVacation'
-  names(single)[names(single) == 'special_vacation'] <- 'SpecialVacation'
-  names(single)[names(single) == 'consistent_vacation'] <- 'ConsistentVacation'
+  # names(single)[names(single) == 'normal_vacation'] <- 'Normal Vacation'
+  # names(single)[names(single) == 'special_vacation'] <- 'Special Vacation'
+  # names(single)[names(single) == 'consistent_vacation'] <- 'Consistent Vacation'
   return(single)
 }
 

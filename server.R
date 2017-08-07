@@ -19,6 +19,7 @@ windowsFonts(BL = windowsFont("微軟正黑體"))
 shinyServer(function(input, output) {
   #重整路徑
   setwd("C:/Users/user/Documents/GitHub/Data_analysis")
+  options(scipen = 10)
   source('tabDEA.R', local=TRUE, encoding = "utf-8")
   source('tabFA.R', local=TRUE, encoding = "utf-8")
   source('tabRF.R', local=TRUE, encoding = "utf-8")

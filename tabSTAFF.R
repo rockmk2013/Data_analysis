@@ -6,7 +6,9 @@ staff_return <- reactive({
   agent <- input$agent
   agent <- read.table(agent$datapath,sep = ",",header = TRUE,encoding = "utf-8")
   single <- input$single
-  single <- read.table(single$datapath,sep = ",",header = TRUE,encoding = "utf-8")
+  single <- read.table(single$datapath,sep = ",",header = TRUE,check.names = FALSE,encoding = "utf-8")
+  #刪去商品櫃資料
+  single = single [,1:23]
   
   data<-combine_data(single,agent)
   
@@ -38,7 +40,6 @@ combine_data<-function(single,agent){
   for(i in 1:nrow(agent))labor<-append(labor,as.vector(as.matrix(agent[i,])))
   single$Labor<-labor
   single$STAR<-single$InstoreTraffic/single$Labor
-
   return(single)
 }
 

@@ -3,13 +3,21 @@ library(shiny)
 fa_return <- reactive({
   # Read data
   multi <- input$multi
-  multi <- read.table(multi$datapath,sep = ",",header = TRUE,encoding = "utf-8")
+  multi <- read.table(multi$datapath,sep = ",",header = TRUE,check.names = FALSE,encoding = "utf-8")
+  #刪去商品櫃資料
+  multi = multi[,1:23]
+  # #字串處理
+  # multi$Revenue = as.numeric(gsub(",","",as.character(multi$Revenue)))
+  # multi$ATV = as.numeric(gsub(",","",as.character(multi$ATV)))
+  
   multi_mean <- multistoremean(multi)
-  storename <- multi_mean[,1]
+  store_name <- sort(unique(multi$Store))
   multi_mean <- multi_mean[,-1]
   multi_mean <- multi_mean[,colSums(multi_mean) > 0]
+  print(multi_mean)
   
-  multi_mean_table <- data.frame(storename,round(multi_mean,2))
+  multi_mean_table <- data.frame(store_name,round(multi_mean,2),check.names = FALSE)
+  
   #corplot
   M <- cor(multi_mean)
   corrplot(M,method="color",type="lower")
@@ -25,21 +33,21 @@ fa_return <- reactive({
   colnames(loading) <- c("Metrics","Factor 1","Factor 2")
   loading.m <- melt(loading, id="Metrics", measure=c("Factor 1","Factor 2"))
   fa_plot <- ggplot(loading.m, aes(Metrics, abs(value), fill=value)) +
-    facet_wrap(~ variable) + geom_bar(stat="identity") + coord_flip() + 
-    scale_fill_gradient2(name = "Loading", 
-                         high = "blue", mid = "white", low = "red", 
+    facet_wrap(~ variable) + geom_bar(stat="identity") + coord_flip() +
+    scale_fill_gradient2(name = "Loading",
+                         high = "blue", mid = "white", low = "red",
                          midpoint=0, guide="colourbar") +
-    ylab("Loading Strength") + 
+    ylab("Loading Strength") +
     theme_bw(base_size=14)
   #fa_plot2
   fa.diagram(fa,Phi=NULL,fe.results=NULL,sort=TRUE,labels=NULL,cut=.5,
              simple=TRUE, errors=FALSE,g=FALSE,digits=1,e.size=.05,rsize=.15,side=2,cex=NULL,marg=c(.5,.5,1,.5),adj=1)
   fa_plot2 <- recordPlot()
   #fa_store
-  fa_store <- cbind.data.frame(unique(multi[,1]),fa$scores)
+  fa_store <- data.frame(store_name,fa$scores)
   rownames(fa_store) <- NULL
-  colnames(fa_store) <- c("Store Number","Factor 1","Factor 2")
-  
+  colnames(fa_store) <- c("Store Name","Factor 1","Factor 2")
+
   #fa_store_plot
   fa_store_plot <- store_to_plot(fa_store)
   list("multi_mean_table" = multi_mean_table,
@@ -76,7 +84,7 @@ addgroup <- function(fa_store){
 
 store_to_plot <- function(fa_store){
   rownames(fa_store) <- NULL
-  colnames(fa_store) <- c("Storenum","F1","F2")
+  colnames(fa_store) <- c("Store","F1","F2")
   fa_store$F1 <- scorescale(fa_store$F1)
   fa_store$F2 <- scorescale(fa_store$F2)
   fa_store$group <- addgroup(fa_store)
@@ -88,7 +96,7 @@ store_to_plot <- function(fa_store){
   y_min <- min(fa_store$F2)
   y_max <- max(fa_store$F2)
   y_width <- max(y_max - y_med, y_med - y_min)
-  fa_store_plot <- ggplot(fa_store,aes(x=F1, y=F2, colour=factor(group))) + geom_point(aes(size = 1.5)) + geom_label(aes(label=Storenum),hjust=0.5,vjust=1) + xlab("FA1") + ylab("FA2")
+  fa_store_plot <- ggplot(fa_store,aes(x=F1, y=F2, colour=factor(group))) + geom_point(aes(size = 1.5)) + geom_label(aes(label=Store),hjust=0.5,vjust=1) + xlab("FA1") + ylab("FA2")
   fa_store_plot <- fa_store_plot + scale_x_continuous(limits = c(x_med - x_width,x_med + x_width))
   fa_store_plot <- fa_store_plot + scale_y_continuous(limits = c(y_med - y_width,y_med + y_width))
   fa_store_plot <- fa_store_plot + geom_vline(xintercept = median(fa_store$F1)) + geom_hline(yintercept = median(fa_store$F2))
@@ -101,13 +109,9 @@ storesummary <- function(df, group, selection){
 }
 
 multistoremean <- function(multi){
-  multi$APV <- multi$Revenue / multi$InstoreTraffic
-  group <- "StoreNumber"
-  selection <- c("StoreNumber","WindowsConversion","Conversion", "ATV", "UPT","APV","EfficientVisit","VisitDuration","RepeatCustomer")
+  group <- "Store"
+  selection <- c("Store","TrafficConversion","SalesConversion", "ATV", "UPT","ACV","PotentialShopper","Avg.ShopperDwell","RepeatCustomer")
   multi_mean <- storesummary(multi, group, selection)
-  # Set name of stores
-  storename <- as.character(unique(multi$StoreNumber))
-  multi_mean[,1] <- storename
   return(multi_mean)
 }
 
@@ -158,13 +162,21 @@ output$downloadData_FA <- downloadHandler(
     
     multi <- input$multi
     multi <- read.table(multi$datapath,sep = ",",header = TRUE,encoding = "utf-8")
+    #刪去商品櫃資料
+    multi = multi[,1:23]
+    #字串處理
+    multi$Revenue = as.numeric(gsub(",","",as.character(multi$Revenue)))
+    multi$ATV = as.numeric(gsub(",","",as.character(multi$ATV)))
+    
     multi_mean <- multistoremean(multi)
-    storename <- multi_mean[,1]
+    
+    
+    store_name <- as.character(unique(multi$Store))
     multi_mean <- multi_mean[,-1]
     multi_mean <- multi_mean[,colSums(multi_mean) > 0]
     
     M <- cor(multi_mean)
-    png("corplot.png",width = 500,height=500)
+    png("corplot.png",width = 800,height=500)
     corrplot(M,method="color",type="lower")
     dev.off()
     
@@ -189,9 +201,9 @@ output$downloadData_FA <- downloadHandler(
                simple=TRUE, errors=FALSE,g=FALSE,digits=1,e.size=.05,rsize=.15,side=2,cex=NULL,marg=c(.5,.5,1,.5),adj=1)
     dev.off()
     
-    fa_store <- cbind.data.frame(unique(multi[,1]),fa$scores)
+    fa_store <- cbind.data.frame(store_name,fa$scores)
     rownames(fa_store) <- NULL
-    colnames(fa_store) <- c("Store Number","Factor 1","Factor 2")
+    colnames(fa_store) <- c("Store Name","Factor 1","Factor 2")
     #fa_store_plot
     fa_store_plot <- store_to_plot(fa_store)
     ggsave("fa_store_plot.png",width = 12,height = 5)

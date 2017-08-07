@@ -4,7 +4,12 @@ library(shiny)
 single_dea_return <- reactive({
   # Read data
   single <- input$single
-  single <- read.table(single$datapath,sep = ",",header = TRUE,encoding = "utf-8")
+  single <- read.table(single$datapath,sep = ",",check.names=FALSE,header = TRUE,encoding = "utf-8")
+  #刪去商品櫃資料
+  single = single [,1:23]
+  
+  single$Revenue = as.numeric(gsub(",","",as.character(single$Revenue)))
+  single$ATV = as.numeric(gsub(",","",as.character(single$ATV)))
   singledata <- single_findmean(single)
   single_all_mean <- singledata$singlestore_dea
   single_workingday_mean <- singledata$singlestore_workingday
@@ -22,7 +27,7 @@ single_dea_calculate <- function(single,single_mean){
   mean_table <- single_mean
   mean_table[,-1] <- round(mean_table[,-1], digits = 2)
   rownames(mean_table) <- NULL
-  time <- unique(single$Time)
+  time <- mean_table[,1]
   single_mean <- data.frame(apply(single_mean[,-1],2,function(x) x / mean(x)))
   X=matrix(single_mean$mean_instore,ncol=1)
   Y=cbind(single_mean$mean_sales,single_mean$mean_transaction)
@@ -43,8 +48,8 @@ single_dea_calculate <- function(single,single_mean){
     geom_bar(stat='identity', position='dodge') + xlab("時間") +
     ylab("效率值")+ scale_y_continuous(breaks=seq(0,1,0.1)) + 
     theme(plot.title = element_text(hjust = 0.5),
-          axis.text.x = element_text(size=16),
-          axis.text.y = element_text(size=16),
+          axis.text.x = element_text(size=12,family = "BL"),
+          axis.text.y = element_text(size=12,family = "BL"),
           axis.title.x = element_text(size=16,family = "BL"),
           axis.title.y = element_text(size=16,family = "BL"),
           legend.title = element_text(family = "BL")) + 
@@ -64,17 +69,17 @@ single_findmean <- function(single){
   group <- "Time"
   selection <- c("Time","InstoreTraffic","Revenue","Transaction")
   singlestore_dea <- storesummary(single, group, selection)
-  time <- as.character(unique(single$Time))
-  singlestore_dea[,1] <- time
+  # time <- as.character(unique(single$Time))
+  # singlestore_dea[,1] <- time
   colnames(singlestore_dea) <- c("time", "mean_instore", "mean_sales", "mean_transaction")
   
-  single_workingday <- filter(single,special_vacation !=1,consistent_vacation !=1,normal_vacation !=1)
-  single_holiday <- filter(single,special_vacation ==1 | consistent_vacation ==1 | normal_vacation==1) 
+  single_workingday <- filter(single,SpecialVacation !=1,ConsistentVacation !=1,NormalVacation !=1)
+  single_holiday <- filter(single,SpecialVacation !=1,ConsistentVacation !=1,NormalVacation !=1)
   
   singlestore_workingday <- storesummary(single_workingday, group, selection)
   singlestore_holiday <- storesummary(single_holiday, group, selection)
-  singlestore_workingday[,1] <- time
-  singlestore_holiday[,1] <- time
+  # singlestore_workingday[,1] <- time
+  # singlestore_holiday[,1] <- time
   colnames(singlestore_workingday) <- c("time", "mean_instore", "mean_sales", "mean_transaction")
   colnames(singlestore_holiday) <- c("time", "mean_instore", "mean_sales", "mean_transaction")
   output <- list(singlestore_dea = singlestore_dea, singlestore_workingday = singlestore_workingday, singlestore_holiday = singlestore_holiday)
@@ -99,7 +104,12 @@ output$single_cv_plot = renderPlot({
 
 output$single_frontier_plot = renderPlot({
   single <- input$single
-  single <- read.table(single$datapath,sep = ",",header = TRUE,encoding = "utf-8")
+  single <- read.table(single$datapath,sep = ",",check.names=FALSE,header = TRUE,encoding = "utf-8")
+  #刪去商品櫃資料
+  single = single [,1:23]
+  
+  single$Revenue = as.numeric(gsub(",","",as.character(single$Revenue)))
+  single$ATV = as.numeric(gsub(",","",as.character(single$ATV)))
   singledata <- single_findmean(single)
   single_all_mean <- singledata$singlestore_dea
   
@@ -135,7 +145,12 @@ output$single_workingday_cv_plot = renderPlot({
 
 output$single_workingday_frontier_plot = renderPlot({
   single <- input$single
-  single <- read.table(single$datapath,sep = ",",header = TRUE,encoding = "utf-8")
+  single <- read.table(single$datapath,sep = ",",check.names=FALSE,header = TRUE,encoding = "utf-8")
+  #刪去商品櫃資料
+  single = single [,1:23]
+  
+  single$Revenue = as.numeric(gsub(",","",as.character(single$Revenue)))
+  single$ATV = as.numeric(gsub(",","",as.character(single$ATV)))
   singledata <- single_findmean(single)
   single_workingday_mean <- singledata$singlestore_workingday
   
@@ -174,7 +189,10 @@ output$single_holiday_cv_plot = renderPlot({
 
 output$single_holiday_frontier_plot = renderPlot({
   single <- input$single
-  single <- read.table(single$datapath,sep = ",",header = TRUE,encoding = "utf-8")
+  single <- read.table(single$datapath,sep = ",",check.names=FALSE,header = TRUE,encoding = "utf-8")
+  #刪去商品櫃資料
+  single = single [,1:23]
+  
   singledata <- single_findmean(single)
   single_holiday_mean <- singledata$singlestore_holiday
   
@@ -206,9 +224,14 @@ output$downloadData_sinall <- downloadHandler(
     fs <- c("cv_plot.png","frontier.png")
     
     single_cv_plot <- single_dea_return()[["all"]][["cv_plot"]]
-    ggsave("cv_plot.png",width = 10,height = 5)
+    ggsave("cv_plot.png",width = 7.2,height = 2.8)
     single <- input$single
     single <- read.table(single$datapath,sep = ",",header = TRUE,encoding = "utf-8")
+    #刪去商品櫃資料
+    single = single [,1:23]
+    
+    single$Revenue = as.numeric(gsub(",","",as.character(single$Revenue)))
+    single$ATV = as.numeric(gsub(",","",as.character(single$ATV)))
     singledata <- single_findmean(single)
     single_all_mean <- singledata$singlestore_dea
     
@@ -241,9 +264,14 @@ output$downloadData_sinworking <- downloadHandler(
     fs <- c("cv_plot.png","frontier.png")
     
     single_cv_plot <- single_dea_return()[["workingday"]][["cv_plot"]]
-    ggsave("cv_plot.png",width = 10,height = 5)
+    ggsave("cv_plot.png",width = 7.2,height = 2.8)
     single <- input$single
-    single <- read.table(single$datapath,sep = ",",header = TRUE,encoding = "utf-8")
+    single <- read.table(single$datapath,sep = ",",check.names=FALSE,header = TRUE,encoding = "utf-8")
+    #刪去商品櫃資料
+    single = single [,1:23]
+    
+    single$Revenue = as.numeric(gsub(",","",as.character(single$Revenue)))
+    single$ATV = as.numeric(gsub(",","",as.character(single$ATV)))
     singledata <- single_findmean(single)
     single_workingday_mean <- singledata$singlestore_workingday
     
@@ -278,10 +306,15 @@ output$downloadData_sinweekend <- downloadHandler(
     fs <- c("cv_plot.png","frontier.png")
     
     single_cv_plot <- single_dea_return()[["holiday"]][["cv_plot"]]
-    ggsave("cv_plot.png",width = 10,height = 5)
+    ggsave("cv_plot.png",width = 7.2,height = 2.8)
     
     single <- input$single
-    single <- read.table(single$datapath,sep = ",",header = TRUE,encoding = "utf-8")
+    single <- read.table(single$datapath,sep = ",",check.names=FALSE,header = TRUE,encoding = "utf-8")
+    #刪去商品櫃資料
+    single = single [,1:23]
+    
+    single$Revenue = as.numeric(gsub(",","",as.character(single$Revenue)))
+    single$ATV = as.numeric(gsub(",","",as.character(single$ATV)))
     singledata <- single_findmean(single)
     single_holiday_mean <- singledata$singlestore_holiday
     
