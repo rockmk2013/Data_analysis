@@ -193,6 +193,7 @@ shinyUI(fluidPage(theme = shinytheme("journal"),
                                         textOutput("DrawAlert"),
                                         HTML('<br>'),
                                         HTML('<br>')
+                                       
                                         )
                              )
                     ),

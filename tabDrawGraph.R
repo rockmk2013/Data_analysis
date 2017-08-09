@@ -1,12 +1,17 @@
 
-draw_hourly <- function(hourly,var,fs){
+draw_hourly <- function(hourly,var){
   #date
-  fs <- c(fs,paste0(var,"date.png"))
+ 
   hourly%>%
-    ggplot(aes_string("Date",var))+geom_point(pch=20,col="steel blue")+geom_smooth(se=F,col="red")+theme_bw()+xlab("")
+    ggplot(aes_string("Date",var))+
+    geom_point(pch=20,col="steel blue")+
+    geom_smooth(se=F,col="red")+
+    theme_bw()+
+    theme(axis.text = element_text(family = "BL"))+
+    xlab("")
   ggsave(paste0(var,"date.png"),width=7.2,height=2.8)
   #box
-  fs <- c(fs,paste0(var,"box.png"))
+  
   hourly$Weekday<-factor(hourly$Weekday,levels = c("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"))
   hourly %>%
     ggplot(aes_string("Weekday",var))+
@@ -18,19 +23,22 @@ draw_hourly <- function(hourly,var,fs){
     )
   ggsave(paste0(var,"box.png"),width=7.2,height=2.8)
   #time
-  fs <- c(fs,paste0(var,"time.png"))
+
   hourly %>%
     ggplot(aes_string("Time",var))+
     geom_point(col="grey")+
-    stat_summary(lwd=1.5, geom="line",aes(group = holiday,col = holiday))+
+    stat_summary(lwd=1.5, geom="line",aes(group = holiday,color=holiday))+
+    scale_color_manual(values=c("#00CACA", "#ff7575"))+
     theme_bw()+
     theme(
       axis.title.x = element_blank(),
-      legend.title = element_blank()
+      legend.title = element_blank(),
+      axis.text = element_text(family = "BL"),
+      legend.text = element_text(family="BL")
     )
   ggsave(paste0(var,"time.png"),width=7.2,height=2.8)
   #bubble
-  fs <- c(fs,paste0(var,"bubble.png"))
+  
   formula=paste0("mean(",var,")")
   hourly%>%
     group_by(Time,Weekday)%>%
@@ -43,7 +51,7 @@ draw_hourly <- function(hourly,var,fs){
           plot.title = element_text(hjust = 0.5))
   ggsave(paste0(var,"bubble.png"),width=7.2,height=2.8)
   #weather
-  fs <- c(fs,paste0(var,"weather.png"))
+  
   hourly%>%
     filter(Weather!="na")%>%
     group_by(Weather)%>%
@@ -55,18 +63,24 @@ draw_hourly <- function(hourly,var,fs){
           axis.title.y = element_blank(),
           axis.text.x = element_blank())
   ggsave(paste0(var,"weather.png"),width=7.2,height=2.8)
-  return(fs)
+  
 }
-draw_daily <- function(daily,var,fs){
+draw_daily <- function(daily,var){
   #partition
-  fs <- c(fs,paste0(var,"partition.png"))
+ 
   daily%>%
-    ggplot(aes_string("Date",var))+geom_bar(stat="identity",col="black",aes(fill= holiday))+
-    theme_bw()+theme(axis.title.x = element_blank(),
-                     legend.title = element_blank())
-  ggsave(paste0(var,"partition.png"),width=7.2,height=2.8)
+    ggplot(aes_string("Date",var))+
+    geom_bar(stat="identity",aes(fill= holiday),col="white")+
+    scale_fill_manual(values=c("#00CACA", "#ff7575"))+
+    theme_bw()+
+    theme(axis.title.x = element_blank(),
+          axis.text = element_text(family = "BL"),
+          legend.text = element_text(family = "BL"),
+          legend.title = element_blank())+
+    scale_x_date(date_breaks = "1 month")
+  ggsave(paste0(var,"partition.png"),width=8,height=2.8)
   #weekday
-  fs <- c(fs,paste0(var,"weekday.png"))
+  
   daily$Weekday<-factor(daily$Weekday,levels = c("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"))
   daily %>%
     ggplot(aes_string("Weekday",var))+
@@ -79,7 +93,7 @@ draw_daily <- function(daily,var,fs){
     )
   ggsave(paste0(var,"weekday.png"),width=7.2,height=2.8)
   #month
-  fs <- c(fs,paste0(var,"month.png"))
+ 
   time_variables<-as.POSIXlt(daily$Date)
   daily$MonthofYear<-time_variables$mon+1
   daily$MonthofYear<-as.factor(month.abb[daily$MonthofYear])
@@ -94,11 +108,10 @@ draw_daily <- function(daily,var,fs){
       legend.position = 'hide'
     )
   ggsave(paste0(var,"month.png"),width=7.2,height=2.8)
-  return(fs)
+  
 }
 
-data_output <- function(hourly,daily,fs){
-  fs <- c( "Time_dataoutput.csv","Holiday_dataoutput.csv","Weekday_dataoutput.csv")
+data_output <- function(hourly,daily){
   
   selection <- c("holiday","Time","InstoreTraffic","StorefrontTraffic","TrafficConversion","Revenue","Transaction","SalesConversion","ATV","UPT","ACV")
   selectionday <- c("holiday","InstoreTraffic","StorefrontTraffic","TrafficConversion","Revenue","Transaction","SalesConversion","ATV","UPT","ACV","PotentialShopper","Avg.ShopperDwell","RepeatCustomer")
@@ -111,22 +124,22 @@ data_output <- function(hourly,daily,fs){
   write.table(hour,file = "time_dataoutput.csv",fileEncoding  = "big5",row.names = FALSE,sep=",")
   write.table(hoursum,file = "holiday_dataoutput.csv",fileEncoding  = "big5",row.names = FALSE,sep=",")
   write.table(week,file = "weekday_dataoutput.csv",fileEncoding  = "big5",row.names = FALSE,sep=",")
-  return(fs)
+ 
 }
 
-draw_all <- function(hourly,daily,fs){
+draw_all <- function(hourly,daily){
   
   hour_data =c("InstoreTraffic","StorefrontTraffic","TrafficConversion","Revenue","Transaction","SalesConversion","ATV","UPT","ACV")
   day_data  =c("InstoreTraffic","StorefrontTraffic","TrafficConversion","Revenue","Transaction","SalesConversion","ATV","UPT","ACV","PotentialShopper","Avg.ShopperDwell","RepeatCustomer")
   
   for(i in hour_data){
 
-    fs = draw_hourly(hourly,i,fs)
+     draw_hourly(hourly,i)
   }
   for(i in day_data){
-    fs = draw_daily(daily,i,fs)
+     draw_daily(daily,i)
   }
-  return(fs)
+  
 }
 
 #main function
@@ -136,6 +149,7 @@ main <- function(){
   #建立資料夾名稱
   filename = paste0(head(strsplit(single$name,split=".",fixed=T)[[1]],1),"(allgraph)")
   #讀取
+  
   single <- read.table(single$datapath,sep = ",",check.names=FALSE,header = TRUE,encoding = "utf-8")
   #刪去商品櫃資料
   single = single[,1:23]
@@ -155,43 +169,37 @@ main <- function(){
   dir.create(filename)
   setwd(paste0("c:/Users/asus/Documents/graph/",filename))
   
-  # write.table(single,file = "hourly.csv",fileEncoding  = "big5",row.names = FALSE,sep=",")
-  # write.table(daily,file = "daily.csv",fileEncoding  = "big5",row.names = FALSE,sep=",")
-  fs <- c()
-  fs= c(draw_all(single,daily,fs),data_output(single,daily,fs))
-  return(fs)
+  draw_all(single,daily)
+  data_output(single,daily)
 }
 
 output$DrawAlert <- renderText({
   if(is.null(input$single)){
-    paste0("請輸入資料!") 
+    paste("請輸入資料!") 
   }else{
-    main()
-    paste("準備完成，請按鈕下載圖片!")
+    paste("請按鈕下載圖片!跑圖需要一陣子，請喝口水稍待片刻!")
   }
 })
+
 filename_return <- reactive({
   #單店
   single <- input$single
   #建立資料夾名稱
   filename = paste0(head(strsplit(single$name,split=".",fixed=T)[[1]],1),"(allgraph)")
   return(filename)
+  
 })
 
 output$downloadGraph_all <- downloadHandler(
-  filename = 'download_graph_all.zip',
+  filename = paste0(filename_return(),".zip"),
   content = function(fname) {
-    # tmpdir <- tempdir()
-    # setwd(tempdir())
-    # print (tempdir())
-    # 
-    # fs = main()
-    # 
-    # print (fs)
-    setwd("c:/Users/asus/Documents/graph")
-    print(filename_return())
-    zip(zipfile=fname, files=filename_return())
+    withProgress( value = 20,detail = 'This takes a few second..',{
+      main()
+      setwd("c:/Users/asus/Documents/graph")
+      print(filename_return())
+      zip(zipfile=fname, files=filename_return())
+      
+    })
     do.call(unlink, list(filename_return(),recursive = T))
   }
-  
 )
