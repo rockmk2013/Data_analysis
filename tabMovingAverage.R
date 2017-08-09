@@ -73,7 +73,7 @@ output$Month_of_year = renderPlot({
   daily$MonthofYear<-time_variables$mon+1
   daily$MonthofYear<-as.factor(month.abb[daily$MonthofYear])
   
-  daily$MonthofYear<-factor(daily$MonthofYear,levels = c("Jan","Feb","Mar","Apr","May","Jun","July","Aug","Sept","Oct","Nov","Dec"))
+  daily$MonthofYear<-factor(daily$MonthofYear,levels = c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"))
   
   a<-daily %>%
     ggplot(aes(MonthofYear,SalesConversion))+
