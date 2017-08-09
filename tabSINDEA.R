@@ -74,7 +74,7 @@ single_findmean <- function(single){
   colnames(singlestore_dea) <- c("time", "mean_instore", "mean_sales", "mean_transaction")
   
   single_workingday <- filter(single,SpecialVacation !=1,ConsistentVacation !=1,NormalVacation !=1)
-  single_holiday <- filter(single,SpecialVacation !=1,ConsistentVacation !=1,NormalVacation !=1)
+  single_holiday <-filter(single,SpecialVacation ==1 | ConsistentVacation ==1 | NormalVacation ==1)
   
   singlestore_workingday <- storesummary(single_workingday, group, selection)
   singlestore_holiday <- storesummary(single_holiday, group, selection)

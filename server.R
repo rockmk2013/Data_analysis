@@ -18,7 +18,7 @@ windowsFonts(BL = windowsFont("微軟正黑體"))
 
 shinyServer(function(input, output) {
   #重整路徑
-  setwd("C:/Users/user/Documents/GitHub/Data_analysis")
+  setwd("C:/Users/asus/Documents/GitHub/Data_analysis")
   options(scipen = 10)
   source('tabDEA.R', local=TRUE, encoding = "utf-8")
   source('tabFA.R', local=TRUE, encoding = "utf-8")
@@ -27,4 +27,5 @@ shinyServer(function(input, output) {
   source('tabSINDEA.R',local=TRUE , encoding = "utf-8")
   source('tabMovingAverage.R',local=TRUE , encoding = "utf-8")
   source('tabSTAFF.R',local=TRUE , encoding = "utf-8")
+  source('tabDrawGraph.R', local=TRUE, encoding = "utf-8")
 })

@@ -184,6 +184,18 @@ shinyUI(fluidPage(theme = shinytheme("journal"),
                              HTML('<br>')
                     ),
                     "Single Store",
+                    tabPanel("Draw All Graph",
+                             tabsetPanel(
+                               tabPanel("DownloadAllGraph",
+                                        downloadButton("downloadGraph_all", "DownloadGraph!"),
+                                        HTML('<br>'),
+                                        HTML('<br>'),
+                                        textOutput("DrawAlert"),
+                                        HTML('<br>'),
+                                        HTML('<br>')
+                                        )
+                             )
+                    ),
                     tabPanel("Trend Analysis",
                              tabsetPanel(
                                tabPanel("Hourly",
