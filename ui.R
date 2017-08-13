@@ -197,6 +197,39 @@ shinyUI(fluidPage(theme = shinytheme("journal"),
                                         )
                              )
                     ),
+                    tabPanel("Cabinet Visualization",
+                             tabsetPanel(
+                               tabPanel("Single Cabinet",
+                                        downloadButton("downloadCabinet", "DownloadGraph!"),
+                                        HTML('<br>'),
+                                        HTML('<center><h2>觸碰次數</h2></center>'),
+                                        plotOutput("shopper_touch_graph"),
+                                        HTML('<br>'),
+                                        HTML('<center><h2>停留時間</h2></center>'),
+                                        plotOutput("dwell_time_graph"),
+                                        HTML('<br>'),
+                                        HTML('<center><h2>停留人次</h2></center>'),
+                                        plotOutput("dwell_traffic_graph"),
+                                        HTML('<br>'),
+                                        HTML('<br>')
+                                        
+                               ),
+                               tabPanel("Multiple Cabinets",
+                                        downloadButton("downloadMultiCabinet", "DownloadGraph!"),
+                                        HTML('<br>'),
+                                        HTML('<center><h2>商品櫃各周天表現比較</h2></center>'),
+                                        plotOutput("cabinet_weekday_graph"),
+                                        HTML('<br>'),
+                                        HTML('<center><h2>商品櫃各時段表現比較</h2></center>'),
+                                        plotOutput("cabinet_time_graph"),
+                                        HTML('<br>'),
+                                        HTML('<center><h2>商品櫃整體表現比較</h2></center>'),
+                                        plotOutput("cabinet_score_graph"),
+                                        HTML('<br>')
+                                        
+                               )
+                             )
+                    ),
                     tabPanel("Trend Analysis",
                              tabsetPanel(
                                tabPanel("Hourly",

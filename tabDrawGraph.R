@@ -193,7 +193,7 @@ filename_return <- reactive({
 output$downloadGraph_all <- downloadHandler(
   filename = paste0(filename_return(),".zip"),
   content = function(fname) {
-    withProgress( value = 20,detail = 'This takes a few second..',{
+    withProgress( value = 20,detail = 'This might take some time..',{
       main()
       setwd("c:/Users/asus/Documents/graph")
       print(filename_return())

@@ -28,4 +28,5 @@ shinyServer(function(input, output) {
   source('tabMovingAverage.R',local=TRUE , encoding = "utf-8")
   source('tabSTAFF.R',local=TRUE , encoding = "utf-8")
   source('tabDrawGraph.R', local=TRUE, encoding = "utf-8")
+  source('tabCABINET.R', local=TRUE, encoding = "utf-8")
 })
