@@ -1,7 +1,7 @@
 cabinet_return <- reactive({
   # Read data
   cabinet <- input$single
-  cabinet <- read.table(cabinet$datapath,sep = ",",header = TRUE,check.names = FALSE,encoding = "UTF-8")
+  cabinet <- read.table(cabinet$datapath,sep = ",",header = TRUE,check.names = FALSE,encoding = "utf-8")
   # Get all cabinets containing the words DwellTime, DwellTraffic or ShopperTouch
   index <- grepl(c("DwellTime|DwellTraffic|ShopperTouch"), colnames(cabinet))
   # Number of cabinets
@@ -160,7 +160,7 @@ main_cab <- function(){
   cabinet <- input$single
   #建立資料夾名稱
   filename = paste0(head(strsplit(cabinet$name,split=".",fixed=T)[[1]],1),"(cabinet)")
-  cabinet <- read.table(cabinet$datapath,sep = ",",check.names=FALSE,header = TRUE,encoding = "UTF-8")
+  cabinet <- read.table(cabinet$datapath,sep = ",",check.names=FALSE,header = TRUE,encoding = "utf-8")
   setwd("c:/Users/asus/Documents/graph")
   dir.create(filename)
   setwd(paste0("c:/Users/asus/Documents/graph/",filename))
@@ -171,14 +171,14 @@ main_multicab <- function(){
   cabinet <- input$single
   #建立資料夾名稱
   filename = paste0(head(strsplit(cabinet$name,split=".",fixed=T)[[1]],1),"(multicabinet)")
-  cabinet <- read.table(cabinet$datapath,sep = ",",check.names=FALSE,header = TRUE,encoding = "UTF-8")
+  cabinet <- read.table(cabinet$datapath,sep = ",",check.names=FALSE,header = TRUE,encoding = "utf-8")
   setwd("c:/Users/asus/Documents/graph")
   dir.create(filename)
   setwd(paste0("c:/Users/asus/Documents/graph/",filename))
   
   # Read data
   cabinet <- input$single
-  cabinet <- read.table(cabinet$datapath,sep = ",",header = TRUE,check.names = FALSE,encoding = "UTF-8")
+  cabinet <- read.table(cabinet$datapath,sep = ",",header = TRUE,check.names = FALSE,encoding = "utf-8")
   # Get all cabinets containing the words DwellTime, DwellTraffic or ShopperTouch
   index <- grepl(c("DwellTime|DwellTraffic|ShopperTouch"), colnames(cabinet))
   # Number of cabinets

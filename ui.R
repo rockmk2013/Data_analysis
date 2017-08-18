@@ -265,6 +265,16 @@ shinyUI(fluidPage(theme = shinytheme("journal"),
                                         HTML('<center><h2>Perform of Month</h2></center>'),
                                         plotOutput("Month_of_year"),
                                         HTML('<br>'),
+                                        HTML('<br>'),
+                                        HTML('<center><h2>Detail Data</h2></center>'),
+                                        dataTableOutput("Month_of_year_instore"),
+                                        HTML('<br>'),
+                                        HTML('<br>'),
+                                        dataTableOutput("Month_of_year_revenue"),
+                                        HTML('<br>'),
+                                        HTML('<br>'),
+                                        dataTableOutput("Month_of_year_salesconversion"),
+                                        HTML('<br>'),
                                         HTML('<br>')
                                )
                              )

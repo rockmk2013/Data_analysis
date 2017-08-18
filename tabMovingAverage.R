@@ -112,6 +112,34 @@ output$Month_of_year = renderPlot({
   
   })
 
+month_return <- reactive({
+  daily <- input$daily
+  daily <- read.table(daily$datapath,sep = ",",check.names = FALSE,header = TRUE,encoding = "utf-8")
+  #刪去商品櫃資料
+  daily = daily[,1:23]
+  
+  time_variables<-as.POSIXlt(daily$Date)
+  daily$MonthofYear<-time_variables$mon+1
+  daily$MonthofYear<-as.factor(month.abb[daily$MonthofYear])
+  
+  daily$MonthofYear<-factor(daily$MonthofYear,levels = c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"))
+  daily$holiday<-as.factor(ifelse(daily$NormalVacation==1|daily$SpecialVacation==1|daily$ConsistentVacation==1,"假日","平日"))
+  daily
+})
+
+output$Month_of_year_instore = renderDataTable({
+  daily = month_return()
+  daily %>% group_by(MonthofYear,holiday) %>% summarise(mean(InstoreTraffic))
+})
+output$Month_of_year_revenue = renderDataTable({
+  daily = month_return()
+  daily %>% group_by(MonthofYear,holiday) %>% summarise(mean(Revenue))
+})
+output$Month_of_year_salesconversion = renderDataTable({
+  daily = month_return()
+  daily %>% group_by(MonthofYear,holiday) %>% summarise(mean(SalesConversion))
+})
+  
 output$downloadData_TAH <- downloadHandler(
   filename = 'TAH_graph.zip',
   content = function(fname) {
