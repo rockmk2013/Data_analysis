@@ -75,17 +75,17 @@ output$Month_of_year = renderPlot({
   
   daily$MonthofYear<-factor(daily$MonthofYear,levels = c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"))
   
+  
   a<-daily %>%
-    ggplot(aes(MonthofYear,SalesConversion))+
+    ggplot(aes(MonthofYear,Revenue))+
     geom_point(aes(col=MonthofYear))+
-    stat_summary(fun.SalesConversion=mean, colour="grey",lwd=1.5, geom="line",aes(group = 1))+
+    stat_summary(fun.Revenue=mean, colour="grey",lwd=1.5, geom="line",aes(group = 1))+
     theme_bw()+
     theme(
       axis.title=element_text(size=16),
       axis.text.x = element_text(size=16),
       axis.text.y = element_text(size=16)
     )
-  
   b<-daily %>%
     ggplot(aes(MonthofYear,InstoreTraffic))+
     geom_point(aes(col=MonthofYear))+
@@ -98,9 +98,9 @@ output$Month_of_year = renderPlot({
     )
   
   c<-daily %>%
-    ggplot(aes(MonthofYear,Revenue))+
+    ggplot(aes(MonthofYear,SalesConversion))+
     geom_point(aes(col=MonthofYear))+
-    stat_summary(fun.Revenue=mean, colour="grey",lwd=1.5, geom="line",aes(group = 1))+
+    stat_summary(fun.SalesConversion=mean, colour="grey",lwd=1.5, geom="line",aes(group = 1))+
     theme_bw()+
     theme(
       axis.title=element_text(size=16),

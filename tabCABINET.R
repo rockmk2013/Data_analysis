@@ -5,15 +5,16 @@ cabinet_return <- reactive({
   # Get all cabinets containing the words DwellTime, DwellTraffic or ShopperTouch
   index <- grepl(c("DwellTime|DwellTraffic|ShopperTouch"), colnames(cabinet))
   # Number of cabinets
-  ncab <- ncol(cabinet[,index])/3
+  ncab <- sum(index)/3
   # Index of first cabinet
   nstart <- ncol(cabinet) - ncol(cabinet[,index]) + 1
   # Get the names of the cabinets
   cabinet_names <- unique(gsub("\\-.*","",colnames(cabinet[,nstart:ncol(cabinet)])))
+  cabinet <- cabinet[rowSums(cabinet[,nstart:ncol(cabinet)]) !=sum(index) * -1,]
   # Summarize columns for visualization
   sel_cabinet <- cbind(cabinet[,c("Weekday","Time")],cabinet[,nstart:ncol(cabinet)])
   mean_cabinet <- sel_cabinet %>% group_by(Weekday,Time) %>% summarise_all(funs(mean))
-  mean_cabinet$Time = factor(unique(mean_cabinet$Time),ordered=TRUE)
+  mean_cabinet$Time = factor(mean_cabinet$Time,ordered=TRUE)
   mean_cabinet$Weekday = factor(mean_cabinet$Weekday,levels=c("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"),ordered=TRUE)
   mean_cabinet <- data.frame(with(mean_cabinet, mean_cabinet[order(Weekday),]))
 
