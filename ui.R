@@ -432,6 +432,21 @@ shinyUI(fluidPage(theme = shinytheme("journal"),
                                )
                              )
                              
+                    ),
+                    tabPanel("Customer Journey",
+                             HTML('<br>'),
+                             HTML('<br>'),
+                             HTML('<center><h2>Customer Trend</h2></center>'),
+                             plotOutput("trend_plot"),
+                             HTML('<br>'),
+                             HTML('<br>'),
+                             HTML('<center><h2>Customer Funnel</h2></center>'),
+                             plotOutput("funnel_plot"),
+                             HTML('<br>'),
+                             HTML('<br>'),
+                             HTML('<center><h2>Customer Waffle</h2></center>'),
+                             plotOutput("waffle_plot")
+
                     )
                     
                     
