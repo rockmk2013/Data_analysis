@@ -15,6 +15,10 @@ library(gridExtra)
 library(randomForest)
 library(rpart.plot)
 library(GPArotation)
+library(riverplot)
+library(RColorBrewer)
+library(waffle)
+
 windowsFonts(BL = windowsFont("微軟正黑體"))
 
 shinyServer(function(input, output) {

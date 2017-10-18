@@ -193,6 +193,61 @@ draw_trend <- function(daily){
   return(trend_plot)
 }
 
+draw_river <- function(daily){
+  nodes <- data.frame(ID = c(LETTERS[1:18]),
+                      labels = c( A= "店外", B= "離開", C="進店",
+                                  D="離開", E="互動", F="離開", G="購買",
+                                  H="其他", I="系列4", J="系列3", K="系列2",L="系列1",
+                                  M="其他", N="系列4", O="系列3", P="系列2",Q="系列1",R="潛在"),
+                      x = c(1,7,6,12,10,22,21,14,14,14,14,14,24,24,24,24,24,18),
+                      y = c(4,0,3,0,4,2,6,2.8,3.4,4,4.6,5.2,4.8,5.4,6,6.6,7.2,4),
+                      col =
+                        c("#80B1D3","#FFFFB3","#80B1D3","#FFFFB3","#80B1D3","#FFFFB3","#80B1D3",
+                          "#BEBADA","#BEBADA","#BEBADA","#BEBADA","#BEBADA",
+                          "#BEBADA","#BEBADA","#BEBADA","#BEBADA","#BEBADA","#80B1D3"),
+                      stringsAsFactors = FALSE
+  )
+  edges <- data.frame( N1= c("A","A","C","C","E","E","E","E","E",
+                             "H","I","J","K","L","R","R","G","G","G","G","G"), 
+                       N2= c("B","C","D","E","H","I","J","K","L",
+                             "R","R","R","R","R","F","G","M","N","O","P","Q"), 
+                       Value = c(0.9,0.1,0.5,0.5,
+                                 0.2,0.4,0.2,0.1,0.1,
+                                 0.2,0.4,0.3,0.2,0.1,0.7,0.3,
+                                 0.2,0.2,0.1,0.2,0.3))
+  r <- makeRiver(nodes,edges)
+  plt<-riverplot(r,default_style = list(srt=0,textcex=0.7),
+                 node_margin = 0.3, nodewidth = 3, plot_area = 1.1)
+  
+  X<-NULL
+  Y<-NULL
+  for(i in 1:nrow(edges)){
+    if(i%in%c(1:4,15,16)){
+      n1 = as.character(edges[i,"N1"])
+      n2 = as.character(edges[i,"N2"])
+      x_coord = (plt[,n1]["x"]+plt[,n2]["x"])/2
+      y_coord = (plt[,n1]["center"]+plt[,n2]["center"])/2
+      X<-append(X,x_coord)
+      Y<-append(Y,y_coord)
+    }
+    else{
+      n = ifelse(i<10|i>14,as.character(edges[i,"N2"]),as.character(edges[i,"N1"]))
+      n2 = ifelse(i<10|i>14,as.character(edges[i+1,"N2"]),as.character(edges[i+1,"N1"]))
+      x_coord = plt[,n]["x"]
+      y_coord = ifelse(i%in%c(9,14,21),plt[,n]["top"]+0.035,
+                       (plt[,n]["center"]+plt[,n2]["center"])/2)
+      X<-append(X,x_coord)
+      Y<-append(Y,y_coord)
+    }
+  }
+  X<-unname(X)
+  Y<-unname(Y)
+  X<-X[-c(5:9)]
+  Y<-Y[-c(5:9)]
+  percentage<-paste0(edges$Value[-c(5:9)]*100,"%")
+  text(X,Y,as.character(percentage),cex=0.7)
+  
+}
 
 output$trend_plot = renderPlot({
   trend_plot <- customer_journey()[["trend_plot"]]
@@ -204,8 +259,13 @@ output$funnel_plot = renderPlot({
   print(funnel_plot)
 })
 
+output$river_plot = renderPlot({
+  draw_river(daily)
+})
+
 output$waffle_plot = renderPlot({
   waffle_plot <- customer_journey()[["waffle_plot"]]
   print(waffle_plot)
 })
+
 
