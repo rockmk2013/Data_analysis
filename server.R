@@ -23,7 +23,11 @@ windowsFonts(BL = windowsFont("微軟正黑體"))
 
 shinyServer(function(input, output) {
   #重整路徑
+<<<<<<< HEAD
   #setwd("C:/Users/asus/Documents/GitHub/Data_analysis")
+=======
+  setwd("C:/Users/asus/Documents/GitHub/Data_analysis")
+>>>>>>> upstream/master
   options(scipen = 10)
   source('tabDEA.R', local=TRUE, encoding = "utf-8")
   source('tabFA.R', local=TRUE, encoding = "utf-8")
