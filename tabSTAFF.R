@@ -1,11 +1,14 @@
 library(shiny)
 
+
 staff_return <- reactive({
   # Read data
   agent <- input$agent
   agent <- read.table(agent$datapath,sep = ",",header = TRUE,encoding = "utf-8")
   single <- input$single
-  single <- read.table(single$datapath,sep = ",",header = TRUE,encoding = "utf-8")
+  single <- read.table(single$datapath,sep = ",",header = TRUE,check.names = FALSE,encoding = "utf-8")
+  #刪去商品櫃資料
+  single = single [,1:23]
   
   data<-combine_data(single,agent)
   
@@ -37,7 +40,6 @@ combine_data<-function(single,agent){
   for(i in 1:nrow(agent))labor<-append(labor,as.vector(as.matrix(agent[i,])))
   single$Labor<-labor
   single$STAR<-single$InstoreTraffic/single$Labor
-
   return(single)
 }
 
@@ -110,10 +112,10 @@ plotfun<-function(num,summary,dat){
       panel.border = element_blank(),
       axis.text.y = element_blank(),
       axis.title.y = element_blank(),
-      plot.title = element_text(hjust = 0.5,size=20),
+      plot.title = element_text(hjust = 0.5,size=20,family = "BL"),
       axis.text.x = element_text(size=16),
-      axis.title.x = element_text(size=18),
-      legend.text=element_text(size=16)
+      axis.title.x = element_text(size=18,family = "BL"),
+      legend.text=element_text(size=16,family = "BL")
     )
   return(g)
 }  
