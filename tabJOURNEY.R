@@ -170,7 +170,7 @@ draw_trend <- function(daily){
   scale = function(variable){
     return((variable-min(variable))/diff(range(variable)))
   }
-  scale_total = cbind(daily[,21:23],sapply(daily[,c(5,6,24,10,128)],scale))
+  scale_total = cbind(daily[,21:23],sapply(daily[,c("InstoreTraffic","StorefrontTraffic","X2Floor.Traffic","Transaction","touch")],scale))
   
   all = scale_total %>% mutate(holiday = if_else(NormalVacation==1|SpecialVacation==1|ConsistentVacation==1,1,0)) %>% group_by(holiday) %>% summarise(mean(StorefrontTraffic),mean(InstoreTraffic),mean(touch),mean(`2Floor Traffic`),mean(Transaction))
   step = c("Base","Awareness","Interact","Desire","Transaction")
