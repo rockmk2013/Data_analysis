@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 customer_journey <- reactive({
   # Read data
   daily <- input$daily
@@ -601,5 +600,3 @@ output$waffle_plot = renderPlot({
   print(waffle_plot)
 })
 
-
->>>>>>> upstream/master
