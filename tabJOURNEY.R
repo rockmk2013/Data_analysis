@@ -164,31 +164,47 @@ draw_waffle <- function(daily) {
   
 }
 
+effect_caculate = function(mean,std){
+  effect_size = diff(mean)/ sqrt(mean(std^2))
+  return(effect_size)
+}
 draw_trend <- function(daily){
   touch = rowSums(daily[,grepl("Touch",colnames(daily))],na.rm = TRUE)
   daily =  daily %>% mutate(touch)
   scale = function(variable){
     return((variable-min(variable))/diff(range(variable)))
   }
-  scale_total = cbind(daily[,21:23],sapply(daily[,c("InstoreTraffic","StorefrontTraffic","X2Floor.Traffic","Transaction","touch")],scale))
+  scale_total = cbind(daily[,21:23],sapply(daily[,c("InstoreTraffic","StorefrontTraffic","2Floor Traffic","Transaction","touch")],scale))
   
-  all = scale_total %>% mutate(holiday = if_else(NormalVacation==1|SpecialVacation==1|ConsistentVacation==1,1,0)) %>% group_by(holiday) %>% summarise(mean(StorefrontTraffic),mean(InstoreTraffic),mean(touch),mean(`2Floor Traffic`),mean(Transaction))
+  all = scale_total %>% mutate(holiday = if_else(NormalVacation==1|SpecialVacation==1|ConsistentVacation==1,1,0)) %>% group_by(holiday) %>% summarise(mean(StorefrontTraffic),sd(StorefrontTraffic),mean(InstoreTraffic),sd(InstoreTraffic),mean(touch),sd(touch),mean(`2Floor Traffic`),sd(`2Floor Traffic`),mean(Transaction),sd(Transaction))
+  
+  
+  effect_size = c()
+  for(i in c(2,4,6,8,10)){
+    effect_size = c(effect_size,effect_caculate(all[,i][[1]],all[,(i+1)][[1]]))
+  }
+  
   step = c("Base","Awareness","Interact","Desire","Transaction")
   step = factor(step,levels=c("Transaction","Desire","Interact","Awareness","Base"))
-  trend_data = cbind(step,transpose(all[,2:6]))
+  trend_data = cbind(step,transpose(all[,c(2,4,6,8,10)]),effect_size)
   
   
   colnames(trend_data)[2:3]=c("NormalDay","Holiday")
   library(reshape2)
-  new = melt(trend_data,id="step")
+  new = melt(trend_data,id=c("step","effect_size"))
+  new = new %>% mutate(effect=if_else(effect_size>2,"Effect","NoneEffect"))
   
   trend_plot= ggplot(new,aes(step,value,colour=variable))+
     geom_line(aes(group=variable),lwd=2)+
-    geom_point(size=7,shape=21,fill="white",stroke=2)+
-    ylim(0,1)+coord_flip()+
+    geom_point(aes(colour = effect),size=7,shape=21,fill="white",stroke=2)+
+    scale_color_manual(values=c("tomato 2","tomato 2","steel blue","steel blue"),
+                       guide = guide_legend(override.aes = list(linetype = c(rep(c("blank","solid"),2)),
+                                                                shape = c(rep(c(21,NA),2)))))+
+    ylim(0,1)+
+    coord_flip()+
     ggtitle("NormalDay/Holiday")+
     theme_bw()+
-    theme(plot.title = element_text(hjust = 0.5),axis.text = element_text(size=14),axis.title = element_text(size=16))
+    theme(plot.title = element_text(hjust = 0.5),axis.text = element_text(size=14),axis.title = element_text(size=16))  
   return(trend_plot)
 }
 
