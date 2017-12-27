@@ -16,7 +16,7 @@ calculate_funnel <- function(daily){
   ### Storefront ###
   mean_storefront <- mean(daily$StorefrontTraffic,na.rm = TRUE)
   ### TO BE FIXED !!
-  mean_storefront <- mean_storefront / 10
+  mean_storefront <- mean_storefront 
   mean_storefront <- round(mean_storefront,2)
   
   ### Awareness (Instore) ###
@@ -31,9 +31,9 @@ calculate_funnel <- function(daily){
   
   ###  Desire (Fitting) ###
   ### TO BE FIXED !!
-  mean_fitting <- 70
-  #mean_fitting <- mean(daily$X2Floor.Traffic) / 4
-  #mean_fitting <- round(mean_fitting,2)
+  ### mean_fitting <- 70
+  mean_fitting <- mean(daily$`2Floor Traffic`) 
+  mean_fitting <- round(mean_fitting,2)
   
   ### Action (Transaction) ###
   mean_transaction <- mean(daily$Transaction,na.rm = TRUE)
@@ -114,7 +114,7 @@ draw_funnel <- function(mean_list){
           axis.title.x=element_blank(),axis.title.y = element_blank()) +
     geom_text(data=df.all[df.all$content!='dummy', ],
               aes(x=Step, y=pos, label=paste0(content, ' - ', number)),
-              size=6, color='white', fontface="bold") + 
+              size=3, color='black', fontface="bold") +
     geom_ribbon(data=df.lines, aes(x=Step, ymax=max(maxx), ymin=maxx, group=1), fill='white') +
     geom_line(data=df.lines, aes(x=Step, y=maxx, group=1), color='darkred', size=2) + 
     geom_ribbon(data=df.lines, aes(x=Step, ymax=minx, ymin=min(minx), group=1), fill='white') +
@@ -168,6 +168,7 @@ effect_caculate = function(mean,std){
   effect_size = diff(mean)/ sqrt(mean(std^2))
   return(effect_size)
 }
+
 draw_trend <- function(daily){
   touch = rowSums(daily[,grepl("Touch",colnames(daily))],na.rm = TRUE)
   daily =  daily %>% mutate(touch)
@@ -176,7 +177,15 @@ draw_trend <- function(daily){
   }
   scale_total = cbind(daily[,21:23],sapply(daily[,c("InstoreTraffic","StorefrontTraffic","2Floor Traffic","Transaction","touch")],scale))
   
-  all = scale_total %>% mutate(holiday = if_else(NormalVacation==1|SpecialVacation==1|ConsistentVacation==1,1,0)) %>% group_by(holiday) %>% summarise(mean(StorefrontTraffic),sd(StorefrontTraffic),mean(InstoreTraffic),sd(InstoreTraffic),mean(touch),sd(touch),mean(`2Floor Traffic`),sd(`2Floor Traffic`),mean(Transaction),sd(Transaction))
+  all = scale_total %>% 
+    mutate(holiday = if_else(NormalVacation==1|SpecialVacation==1|ConsistentVacation==1,1,0)) %>% 
+    group_by(holiday) %>% 
+    summarise(mean(StorefrontTraffic),sd(StorefrontTraffic),
+              mean(InstoreTraffic),sd(InstoreTraffic),
+              mean(touch),sd(touch),
+              mean(`2Floor Traffic`),sd(`2Floor Traffic`),
+              mean(Transaction),sd(Transaction)
+              )
   
   
   effect_size = c()

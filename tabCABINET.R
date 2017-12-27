@@ -9,42 +9,49 @@ cabinet_return <- reactive({
   # Index of first cabinet
   nstart <- ncol(cabinet) - ncol(cabinet[,index]) + 1
   # Get the names of the cabinets
-  cabinet_names <- unique(gsub("\\-.*","",colnames(cabinet[,nstart:ncol(cabinet)])))
+  cabinet_names <- gsub("-ShopperTouch","",colnames(cabinet[,seq(nstart,ncol(cabinet),3)]))
   # Summarize columns for visualization
-  sel_cabinet <- cbind(cabinet[,c("Weekday","Time")],cabinet[,nstart:ncol(cabinet)])
+  sel_cabinet <- cbind(cabinet[,c("Weekday","Time")],apply(cabinet[,nstart:ncol(cabinet)],2,function(x)as.numeric(x)))
   sel_cabinet[sel_cabinet < 0] <- NA
   mean_cabinet <- sel_cabinet %>% group_by(Weekday,Time) %>% summarise_all(funs(mean(., na.rm = TRUE)))
   mean_cabinet$Time = factor(mean_cabinet$Time,ordered=TRUE)
   mean_cabinet$Weekday = factor(mean_cabinet$Weekday,levels=c("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"),ordered=TRUE)
   mean_cabinet <- data.frame(with(mean_cabinet, mean_cabinet[order(Weekday),]))
-
+  mean_cabinet[is.na(mean_cabinet)] <- NA
+  
   #Three plots for the first cabinet
-    tmp_cabinet <- cbind(mean_cabinet[,c("Weekday","Time")],mean_cabinet[,3:5])
-    tmp_name <- c("Weekday","Time","ShopperTouch","DwellTime","DwellTraffic")
-    colnames(tmp_cabinet) <- tmp_name
-    shopper_touch_graph <- ggplot(tmp_cabinet,aes(Time,Weekday)) + 
-      geom_point(aes(size=ShopperTouch), colour="green3") + 
-      theme_bw() + 
-      theme(axis.title.x = element_blank(), axis.title.y = element_blank(), plot.title = element_text(hjust = 0.5,family = "BL")) + 
-      ggtitle(colnames(cabinet)[nstart])
-    dwell_time_graph <- ggplot(tmp_cabinet,aes(Time,Weekday)) + 
-      geom_point(aes(size=DwellTime), colour="pink2") + 
-      theme_bw() + 
-      theme(axis.title.x = element_blank(), axis.title.y = element_blank(), plot.title = element_text(hjust = 0.5,family = "BL")) + 
-      ggtitle(colnames(cabinet)[nstart+1])
-    dwell_traffic_graph <- ggplot(tmp_cabinet,aes(Time,Weekday)) + 
-      geom_point(aes(size=DwellTraffic), colour="dodgerblue") + 
-      theme_bw() + 
-      theme(axis.title.x = element_blank(), axis.title.y = element_blank(), plot.title = element_text(hjust = 0.5,family = "BL")) + 
-      ggtitle(colnames(cabinet)[nstart+2])
-
-    mean_cabinet[is.na(mean_cabinet)] <- NA
+  tmp_cabinet <- cbind(mean_cabinet[,c("Weekday","Time")],mean_cabinet[,3:5])
+  tmp_name <- c("Weekday","Time","ShopperTouch","DwellTime","DwellTraffic")
+  colnames(tmp_cabinet) <- tmp_name
+  shopper_touch_graph <- ggplot(tmp_cabinet,aes(Time,Weekday)) + 
+    geom_point(aes(size=ShopperTouch), colour="green3") + 
+    theme_bw() + 
+    theme(axis.title.x = element_blank(), axis.title.y = element_blank(), plot.title = element_text(hjust = 0.5,family = "BL")) + 
+    ggtitle(colnames(cabinet)[nstart])
+  dwell_time_graph <- ggplot(tmp_cabinet,aes(Time,Weekday)) + 
+    geom_point(aes(size=DwellTime), colour="pink2") + 
+    theme_bw() + 
+    theme(axis.title.x = element_blank(), axis.title.y = element_blank(), plot.title = element_text(hjust = 0.5,family = "BL")) + 
+    ggtitle(colnames(cabinet)[nstart+1])
+  dwell_traffic_graph <- ggplot(tmp_cabinet,aes(Time,Weekday)) + 
+    geom_point(aes(size=DwellTraffic), colour="dodgerblue") + 
+    theme_bw() + 
+    theme(axis.title.x = element_blank(), axis.title.y = element_blank(), plot.title = element_text(hjust = 0.5,family = "BL")) + 
+    ggtitle(colnames(cabinet)[nstart+2])
   
-    # Mean by weekday and time
-    mean_by_weekday <- mean_cabinet %>% group_by(Weekday) %>% dplyr::select(seq(from=3,to=ncol(mean_cabinet),by=1)) %>% summarise_all(funs(mean(., na.rm = TRUE)))
-    mean_by_time <- mean_cabinet %>% group_by(Time) %>% dplyr::select(seq(from=3,to=ncol(mean_cabinet),by=1)) %>% summarise_all(funs(mean(., na.rm = TRUE)))
+  mean_cabinet[is.na(mean_cabinet)] <- NA
   
-    # Determine which metric to use
+  # Mean by weekday and time
+  mean_by_weekday <- mean_cabinet %>% 
+    group_by(Weekday) %>% 
+    dplyr::select(seq(from=3,to=ncol(mean_cabinet),by=1)) %>% 
+    summarise_all(funs(mean(., na.rm = TRUE)))
+  mean_by_time <- mean_cabinet %>% 
+    filter(Weekday=="Sunday" | Weekday=="Saturday") %>%
+    group_by(Time) %>% 
+    dplyr::select(seq(from=3,to=ncol(mean_cabinet),by=1)) %>% 
+    summarise_all(funs(mean(., na.rm = TRUE)))
+  # Determine which metric to use
   hasShopperTouch <- sum((colSums(mean_cabinet[,seq(from=3,to=3+(ncab-1)*3,by=3)]) > 0) & (!is.na(colSums(mean_cabinet[,seq(from=3,to=3+(ncab-1)*3,by=3)]))))
   hasDwellTraffic <- sum((colSums(mean_cabinet[,seq(from=5,to=5+(ncab-1)*3,by=3)]) > 0) & (!is.na(colSums(mean_cabinet[,seq(from=5,to=5+(ncab-1)*3,by=3)]))))
   
@@ -80,10 +87,10 @@ cabinet_return <- reactive({
   mean_by_weekday_long <- melt(mean_by_weekday, id.vars="Weekday", value.name="Score", variable.name="Cabinet")
   # RETURN CABINET WEEKDAY GRAPH
   cabinet_weekday_graph <- ggplot(mean_by_weekday_long, aes(Cabinet, Weekday)) + 
-          geom_tile(aes(fill = Score),colour = "white") + 
-          geom_text(aes(label = round(Score, 1)),size=3) + 
-          scale_fill_gradient(low = "white",high = "red") + 
-          theme(axis.text.x = element_text(angle = 45, hjust = 1,family = "BL"),axis.text = element_text(family = "BL"))
+    geom_tile(aes(fill = Score),colour = "white") + 
+    geom_text(aes(label = round(Score, 1)),size=3) + 
+    scale_fill_gradient(low = "white",high = "red") + 
+    theme(axis.text.x = element_text(angle = 45, hjust = 1,family = "BL"),axis.text = element_text(family = "BL"))
   
   mean_by_time <- mean_by_time[,c(1,seq(from=2,to=(3*ncab-1),by=3))]
   colnames(mean_by_time) <- c("Time",as.character(seq(from=1,to=ncab,by=1)))
@@ -93,10 +100,10 @@ cabinet_return <- reactive({
   mean_by_time_long <- melt(mean_by_time, id.vars="Time", value.name="Score", variable.name="Cabinet")
   # RETURN CABINET TIME GRAPH
   cabinet_time_graph <- ggplot(mean_by_time_long, aes(Cabinet, Time)) + 
-          geom_tile(aes(fill = Score),colour = "white") + 
-          geom_text(aes(label = round(Score, 1)),size=3) + 
-          scale_fill_gradient(low = "white",high = "blue") + 
-          theme(axis.text.x = element_text(angle = 45, hjust = 1),axis.text = element_text(family = "BL"))
+    geom_tile(aes(fill = Score),colour = "white") + 
+    geom_text(aes(label = round(Score, 1)),size=3) + 
+    scale_fill_gradient(low = "white",high = "blue") + 
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),axis.text = element_text(family = "BL"))
   
   # Performance of each cabinet
   #colnames(mean_by_time) <- c("Time",cabinet_names[as.integer(colnames(mean_by_time)[-1])])
@@ -117,7 +124,7 @@ cabinet_return <- reactive({
     coord_flip(expand = TRUE)+
     theme(axis.text = element_text(family = "BL"))
   #+ labs(title= "Normalised score for each cabinet") 
-
+  
   
   list("shopper_touch_graph" = shopper_touch_graph,
        "dwell_time_graph" = dwell_time_graph,
@@ -143,7 +150,7 @@ draw_single_cabinet <- function(cabinet){
   mean_cabinet$Time = factor(mean_cabinet$Time,ordered=TRUE)
   mean_cabinet$Weekday = factor(mean_cabinet$Weekday,levels=c("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"),ordered=TRUE)
   mean_cabinet <- data.frame(with(mean_cabinet, mean_cabinet[order(Weekday),]))
-
+  
   #Three plots for each cabinet
   for(i in 1:ncab){
     tmp_cabinet <- cbind(mean_cabinet[,c("Weekday","Time")],mean_cabinet[,(3*i):(3*i+2)])
@@ -168,7 +175,7 @@ main_cab <- function(){
   setwd("c:/Users/asus/Documents/graph")
   dir.create(filename)
   setwd(paste0("c:/Users/asus/Documents/graph/",filename))
-
+  
   draw_single_cabinet(cabinet)
 }
 main_multicab <- function(){
